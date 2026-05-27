@@ -1,0 +1,236 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;500;600;700&family=Kalam:wght@300;400;700&family=Permanent+Marker&family=Patrick+Hand&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-marker: "Permanent Marker", cursive;
+  --font-caveat: "Caveat", cursive;
+  --font-hand: "Patrick Hand", cursive;
+  --font-kalam: "Kalam", cursive;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Google Material You (Sunset Orange) - Dark Mode Theme (M3 Dynamic Specs) */
+  --color-charcoal: #1A110F;          /* Dynamic Dark base background */
+  --color-charcoal-warm: #120907;     /* Deep warm dark gray-brown secondary container */
+  --color-paper: #221816;             /* Cozy charcoal-terracotta card surface */
+  --color-paper-rgb: 34, 24, 22;
+  --color-paper-light: #2E211E;       /* Elevated dark card surface */
+  --color-ink: #F0E0DC;               /* Soft warm white / light-beige */
+  --color-ink-dim: #D8C2BC;           /* Warm gray key info text */
+  --color-ink-faint: #9F8C87;         /* Cozy espresso-outline text/icons */
+  --color-accent: #FFB59D;            /* Radiant soft peach-orange accent */
+  --color-pencil-light: #3D2A24;       /* Slate-terracotta border outlines */
+  --color-pencil-light-rgb: 61, 42, 36;
+  --color-pencil-dark: #0E0705;       /* Pitch-black charcoal warm */
+  --color-pencil-dark-rgb: 14, 7, 5;
+  --shadow-card: 0 10px 40px -10px rgba(0, 0, 0, 0.45);
+  --shadow-hover: 0 25px 60px -15px rgba(0, 0, 0, 0.65);
+}
+
+html {
+  scroll-behavior: auto;
+  scroll-padding-top: 80px;
+}
+
+#hero, #skills, #work, #about, #contact {
+  scroll-margin-top: 100px;
+}
+
+@layer base {
+  body {
+    @apply text-ink font-sans leading-relaxed min-h-screen overflow-x-hidden relative antialiased;
+    background-color: var(--color-charcoal);
+    transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Faded Background Grid */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: 
+      linear-gradient(to right, color-mix(in srgb, var(--color-accent), transparent 94%) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--color-accent), transparent 94%) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(circle at center, black 0%, transparent 85%);
+    pointer-events: none;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-kalam;
+  }
+
+  .font-hand {
+    font-family: var(--font-hand);
+  }
+
+  /* Vignette */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    pointer-events: none;
+    background: radial-gradient(circle, transparent 80%, color-mix(in srgb, var(--color-accent), transparent 94%) 100%);
+    opacity: 0.3;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-pencil-light);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent);
+  }
+
+  @media (max-width: 768px) {
+  }
+}
+
+@layer utilities {
+  .sketch-filter-strong {
+    filter: url(#pencilFx) drop-shadow(4px 4px 0px rgba(0,0,0,0.2));
+  }
+
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .brush-filter {
+    filter: url(#brushFx);
+  }
+
+  /* Tactile Underline */
+  .scribble-underline {
+    position: relative;
+    display: inline-block;
+  }
+
+  .scribble-underline::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--color-accent);
+    opacity: 0.6;
+    clip-path: polygon(0% 20%, 20% 80%, 40% 15%, 60% 85%, 80% 10%, 100% 75%, 95% 85%, 80% 25%, 60% 90%, 40% 30%, 20% 95%, 0% 40%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+  }
+
+  .scribble-underline:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* GPU layer optimizations */
+  @media (min-width: 768px) {
+    .will-change-transform {
+      will-change: transform;
+    }
+    .gpu {
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+  }
+  
+  /* Faster hover transitions */
+  .hover-instant {
+    transition-duration: 150ms !important;
+  }
+  
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+      filter: none !important;
+    }
+  }
+  
+  /* Enable heavy filters only on desktop for performance */
+  @media (min-width: 1024px) {
+    .sketch-filter, .brush-filter {
+      transform: translateZ(0);
+      will-change: filter;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .sketch-filter, .brush-filter, .brush-filter-strong {
+      filter: none !important;
+    }
+  }
+
+  /* Low Hardware / Performance Mode overrides */
+  body.perf-lite {
+    /* Stop viewport-wide radial/linear grid masks that require constant graphic calculations on scroll */
+    &::before {
+      background-image: none !important;
+      mask-image: none !important;
+    }
+    &::after {
+      display: none !important;
+    }
+
+    /* Zero out CPU-intensive SVG displacement filter rendering */
+    .sketch-filter, 
+    .brush-filter, 
+    .sketch-filter-strong, 
+    .brush-filter-strong {
+      filter: none !important;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+    
+    /* Completely remove transitions, animations, filters, and blurs to ensure perfect instant rendering and zero flickering */
+    *, ::before, ::after {
+      transition: none !important;
+      transition-property: none !important;
+      animation: none !important;
+      animation-name: none !important;
+      backdrop-filter: none !important;
+      filter: none !important;
+    }
+  }
+}
+
+@keyframes sketch-wiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  33% { transform: rotate(0.4deg) translate(1px, 0.5px) scale(1.02); }
+  66% { transform: rotate(-0.4deg) translate(-1px, -0.5px) scale(0.99); }
+}
+
+.btn-sketch-hover {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.btn-sketch-hover:hover {
+  transform: translateY(-2px) translateZ(0);
+}
+
+@keyframes scrollPulse {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(3px); opacity: 0.4; }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 var(--color-accent); opacity: 0.4; }
+  50%       { transform: scale(1.15); box-shadow: 0 0 0 5px transparent; opacity: 0; }
+}
