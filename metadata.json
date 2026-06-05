@@ -1,5 +1,8 @@
 {
   "name": "Remix: Remix: Remix: Remix: Aayu Portfolio",
   "description": "Developer \u0026 Artist Portfolio for Aayu, featuring code, art, and motion.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

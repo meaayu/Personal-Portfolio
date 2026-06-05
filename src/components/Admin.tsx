@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, MessageSquare, Settings, Save, Check, Send } from 'lucide-react';
+import { RefreshCw, MessageSquare, Settings, Save, Check, Send, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PROJECTS } from '../constants';
 
@@ -24,6 +24,7 @@ export default function Admin() {
   const [sessions, setSessions] = useState<Record<string, ChatMessage[]>>({});
   const [loading, setLoading] = useState(true);
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [replyText, setReplyText] = useState<Record<string, string>>({});
@@ -31,7 +32,9 @@ export default function Admin() {
 
   // Password change state
   const [currentPassword, setCurrentPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [newPassword, setNewPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [passwordChangeStatus, setPasswordChangeStatus] = useState<{type: 'idle'|'loading'|'success'|'error', msg: string}>({type: 'idle', msg: ''});
   
   // Settings state
@@ -238,14 +241,21 @@ export default function Admin() {
           <h2 className="text-3xl font-bold mb-2 font-hand text-ink">Admin Portal</h2>
           <p className="text-ink-dim text-sm mb-8">Enter your credentials to access the portfolio dashboard.</p>
           <form onSubmit={handleLogin} className="flex flex-col gap-5">
-            <div className="space-y-1">
+            <div className="space-y-1 relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-charcoal border border-pencil-light/20 rounded-xl px-4 py-3 text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all placeholder:text-ink-dim/50"
+                className="w-full bg-charcoal border border-pencil-light/20 rounded-xl px-4 py-3 pr-12 text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all placeholder:text-ink-dim/50"
               />
+              <button
+                type="button"
+                className="absolute right-4 top-3 text-ink-dim hover:text-ink transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
               {loginError && <div className="text-red-400 text-xs px-2 mt-1">{loginError}</div>}
             </div>
             <button type="submit" disabled={!password} className="bg-accent text-charcoal font-bold rounded-xl px-4 py-3.5 hover:bg-accent/90 transition-colors shadow-lg shadow-accent/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:shadow-none">
@@ -572,23 +582,37 @@ export default function Admin() {
               </div>
 
               <div className="space-y-4 max-w-sm">
-                <div>
+                <div className="relative">
                   <label className="text-xs font-bold text-ink uppercase tracking-wider mb-2 block">Current Password</label>
                   <input
-                    type="password"
+                    type={showCurrentPassword ? "text" : "password"}
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full bg-charcoal/50 border border-pencil-light/20 rounded-xl px-4 py-3 text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all"
+                    className="w-full bg-charcoal/50 border border-pencil-light/20 rounded-xl px-4 py-3 pr-12 text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all"
                   />
+                  <button
+                    type="button"
+                    className="absolute right-4 top-10 text-ink-dim hover:text-ink transition-colors"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  >
+                    {showCurrentPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
                 </div>
-                <div>
+                <div className="relative">
                   <label className="text-xs font-bold text-ink uppercase tracking-wider mb-2 block">New Password</label>
                   <input
-                    type="password"
+                    type={showNewPassword ? "text" : "password"}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full bg-charcoal/50 border border-pencil-light/20 rounded-xl px-4 py-3 text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all"
+                    className="w-full bg-charcoal/50 border border-pencil-light/20 rounded-xl px-4 py-3 pr-12 text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/10 transition-all"
                   />
+                  <button
+                    type="button"
+                    className="absolute right-4 top-10 text-ink-dim hover:text-ink transition-colors"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
                 </div>
                 <div className="pt-2">
                   <button
