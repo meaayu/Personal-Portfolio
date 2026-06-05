@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { X, ChevronLeft, ChevronRight, ExternalLink, Play, Clock } from 'lucide-react';
 import { ProjectData } from '../types';
 import { cn, throttle } from '../lib/utils';
-import { motion, AnimatePresence, useScroll, useSpring, useTransform } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useSpring, useTransform, useDragControls } from 'motion/react';
 import { usePerformanceMode } from '../hooks/usePerformanceMode';
 
 interface ProjectModalProps {
@@ -46,10 +46,11 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
   }, [project]);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 768 : false);
   const [isPlayingVideo, setIsPlayingVideo] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [containerNode, setContainerNode] = useState<HTMLDivElement | null>(null);
+  const dragControls = useDragControls();
 
   // Framer Motion Scroll Progress for better performance (no state re-renders)
   const { scrollYProgress } = useScroll({
@@ -116,7 +117,9 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
   return (
     <AnimatePresence>
       {project && (
-        <div className={cn(
+        <motion.div 
+          exit={{ opacity: 1, transition: { duration: 0.4 } }}
+          className={cn(
           "fixed inset-0 z-[1000] flex overflow-hidden",
           isMobile ? "items-end" : "justify-end"
         )}>
@@ -126,49 +129,56 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-charcoal/60 z-0 cursor-zoom-out gpu transition-all duration-300"
+            className="absolute inset-0 bg-black/60 z-0 cursor-zoom-out gpu transition-all duration-300 backdrop-blur-sm"
           />
  
           {/* Creative Studio Drawer */}
           <motion.div
-            initial={isMobile ? { y: '100%' } : { x: '100%' }}
-            animate={{ x: 0, y: 0 }}
-            exit={isMobile ? { y: '100%' } : { x: '100%' }}
-            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-            drag={isMobile ? false : "x"}
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.1}
+            initial={isMobile ? { y: '100%' } : { x: '100%', opacity: 0 }}
+            animate={{ x: 0, y: 0, opacity: 1 }}
+            exit={isMobile ? { y: '100%' } : { x: '100%', opacity: 0 }}
+            transition={isMobile 
+              ? { type: "spring", damping: 25, stiffness: 300, mass: 0.8 } 
+              : { type: "spring", damping: 30, stiffness: 300 }
+            }
+            drag={isMobile ? "y" : "x"}
+            dragControls={dragControls}
+            dragListener={!isMobile} // Disable default drag listener on mobile so only the grabber initiates drag
+            dragConstraints={isMobile ? { top: 0, bottom: 0 } : { left: 0, right: 0 }}
+            dragElastic={isMobile ? { top: 0, bottom: 0.8 } : 0.1}
             onDragEnd={(_, info) => {
-              if (info.offset.x > 100) onNavigate(-1);
-              else if (info.offset.x < -100) onNavigate(1);
+              if (isMobile) {
+                if (info.offset.y > 100 || info.velocity.y > 500) {
+                  onClose();
+                }
+              } else {
+                if (info.offset.x > 100) onNavigate(-1);
+                else if (info.offset.x < -100) onNavigate(1);
+              }
             }}
             className={cn(
               "relative flex flex-col z-10 bg-paper overflow-hidden gpu will-change-transform",
-              isMobile ? "w-full h-[94vh] rounded-t-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.4)] border-t border-pencil-light/65" : "h-full w-[min(680px,80vw)] border-l-2 border-pencil-light/65 shadow-[-15px_0_45px_rgba(0,0,0,0.35)]"
+              isMobile ? "w-full h-[92vh] rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.4)] border-t border-pencil-light/30" : "h-full w-[min(680px,80vw)] border-l-2 border-pencil-light/65 shadow-[-15px_0_45px_rgba(0,0,0,0.35)]"
             )}
           >
             {/* Visual HUD & Blueprint Texture */}
-            <div 
-              className="absolute inset-0 opacity-[0.05] pointer-events-none" 
-              style={{ 
-                backgroundImage: 'linear-gradient(to right, #b8a898 1px, transparent 1px), linear-gradient(to bottom, #b8a898 1px, transparent 1px)', 
-                backgroundSize: '40px 40px',
-                WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 25%, black 75%, transparent)',
-                maskImage: 'linear-gradient(to bottom, transparent, black 25%, black 75%, transparent)'
-              }} 
-            />
+            {/* Background grid removed as per instructions */}
 
             {/* Mobile Grabber */}
             {isMobile && (
-              <div className="shrink-0 h-10 flex items-center justify-center relative z-[100]">
-                <div className="w-12 h-1.5 bg-pencil-light/40 rounded-full" />
+              <div 
+                className="shrink-0 h-8 mt-2 flex items-center justify-center relative z-[100] touch-none cursor-grab active:cursor-grabbing w-full"
+                onPointerDown={(e) => dragControls.start(e)}
+              >
+                <div className="w-12 h-1.5 bg-ink/20 rounded-full" />
               </div>
             )}
 
             {/* Tactical Status Bar */}
             <header className={cn(
-              "h-20 md:h-28 flex items-center justify-between px-5 md:px-12 shrink-0 z-50 transition-all duration-300 relative gpu",
-              isScrolled ? "bg-paper/95 backdrop-blur-md border-b-2 border-dashed border-pencil-light/35 shadow-md" : "bg-transparent"
+              "h-16 md:h-24 flex items-center justify-between px-5 md:px-12 shrink-0 z-50 transition-all duration-300 relative gpu",
+              isScrolled ? "bg-paper/95 backdrop-blur-sm border-b border-pencil-light/35 shadow-sm" : "bg-transparent",
+              isMobile && !isScrolled && "mt-1"
             )}>
               <div className="flex items-center gap-4 md:gap-8">
                 <div className="flex items-center gap-6 md:gap-8">
@@ -200,7 +210,7 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                     href={project.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-1.5 border border-dashed border-accent/40 bg-accent/5 hover:bg-accent/15 hover:border-accent/70 rounded-xl transition-all duration-300 cursor-pointer text-ink group relative select-none shadow-[2px_2px_0_rgba(var(--color-pencil-light-rgb),0.25)]"
+                    className="flex items-center gap-2 px-3 py-1.5 border-2 border-solid border-pencil-light bg-accent/5 hover:bg-accent/15 rounded-xl transition-all duration-300 cursor-pointer text-ink group relative select-none shadow-[4px_4px_0_0_var(--color-pencil-light)] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[6px_6px_0_0_var(--color-accent)] hover:border-accent"
                   >
                     <span className="font-sans text-[0.72rem] md:text-[0.78rem] font-bold tracking-wider uppercase">
                       Live Project
@@ -212,7 +222,7 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                 <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={onClose}
-                  className="w-10 h-10 bg-paper/85 border-2 border-pencil-light/60 rounded-xl flex items-center justify-center text-ink-dim hover:text-accent hover:border-accent hover:rotate-90 transition-all duration-300 shadow-sm cursor-pointer"
+                  className="w-10 h-10 bg-paper/85 border-2 border-solid border-pencil-light rounded-xl flex items-center justify-center text-ink-dim transition-all duration-300 shadow-[4px_4px_0_0_var(--color-pencil-light)] cursor-pointer hover:shadow-[6px_6px_0_0_var(--color-accent)] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:border-accent hover:text-accent group"
                   aria-label="Close modal"
                 >
                   <X size={18} strokeWidth={2.5} />
@@ -279,14 +289,6 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                         <span className="relative z-10 block pr-6 text-ink/90">
                           {project.desc}
                         </span>
-                        
-                        {/* Technical Coordinates Decor */}
-                        <div className="absolute bottom-3 right-6 font-mono text-[0.5rem] text-accent/40 font-bold tracking-widest uppercase select-none opacity-90">
-                          INDEX_KTM: {project.id}_BLK_{projectIndex}
-                        </div>
-
-                        {/* Texture Overlay */}
-                        <div className="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-multiply" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/graphy.png")' }} />
                       </motion.div>
                     </div>
                   </div>
@@ -326,10 +328,10 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                       
                       {/* Hand-sketched paste-tape graphic */}
                       {!liteMode && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-5 bg-accent/25 border border-accent/35 opacity-80 backdrop-blur-[1px] select-none rotate-[-1.5deg] z-20 pointer-events-none shadow-[2px_2px_5px_rgba(0,0,0,0.05)]" style={{ clipPath: 'polygon(0% 12%, 3% 0%, 97% 4%, 100% 15%, 98% 88%, 91% 100%, 8% 97%, 2% 84%)' }} />
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-5 bg-accent/25 border border-accent/35 opacity-80 select-none rotate-[-1.5deg] z-20 pointer-events-none shadow-[2px_2px_5px_rgba(0,0,0,0.05)]" style={{ clipPath: 'polygon(0% 12%, 3% 0%, 97% 4%, 100% 15%, 98% 88%, 91% 100%, 8% 97%, 2% 84%)' }} />
                       )}
 
-                      <div className="relative aspect-[16/10] bg-charcoal-warm shadow-2xl rounded-2xl overflow-hidden border-2 border-pencil-light/60 group-hover:border-accent/40 group-hover:scale-[1.01] transition-transform duration-700 ease-[0.16,1,0.3,1] shadow-[5px_5px_0_rgba(var(--color-pencil-light-rgb),0.3)]">
+                      <div className="relative aspect-[16/10] bg-charcoal-warm shadow-2xl rounded-2xl overflow-hidden border-2 border-pencil-light/60 group-hover:border-accent/40 group-hover:scale-[1.01] transition-transform duration-700 ease-[0.16,1,0.3,1] shadow-[5px_5px_0_var(--color-pencil-light)]">
                         {project.youtube ? (
                           <div className="w-full h-full relative bg-black">
                             {!isPlayingVideo ? (
@@ -507,15 +509,6 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                     whileInView={{ opacity: 1 }}
                     className="pt-8 md:pt-12 text-center select-none flex flex-col items-center"
                   >
-                    {/* Small mountains drawing representing Himalayan heritage */}
-                    <div className="flex flex-col items-center justify-center opacity-30 select-none pb-6">
-                      <svg viewBox="0 0 100 35" className="w-16 h-7 text-accent stroke-current" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M 5,30 L 30,12 L 48,24 L 62,16 L 85,30" strokeWidth="1.2" />
-                        <path d="M 18,30 L 48,5 L 75,30" strokeWidth="2" />
-                      </svg>
-                      <span className="font-sans text-[0.62rem] tracking-wider text-ink-dim/70 mt-1.5 uppercase font-medium">Kathmandu, Nepal</span>
-                    </div>
-
                     <div className="h-[2px] w-full max-w-[124px] mx-auto bg-dashed border-t border-dashed border-pencil-light/60 mb-6" />
                     
                     <p className="font-hand text-[1.10rem] md:text-[1.30rem] text-ink-dim italic max-w-lg mx-auto leading-relaxed">
@@ -667,7 +660,7 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

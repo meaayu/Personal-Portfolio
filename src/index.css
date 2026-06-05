@@ -43,37 +43,29 @@ html {
     transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* Faded Background Grid */
+  /* Loading screen style grid */
   body::before {
     content: "";
     position: fixed;
     inset: 0;
     z-index: -1;
+    opacity: 0.045;
     background-image: 
-      linear-gradient(to right, color-mix(in srgb, var(--color-accent), transparent 94%) 1px, transparent 1px),
-      linear-gradient(to bottom, color-mix(in srgb, var(--color-accent), transparent 94%) 1px, transparent 1px);
-    background-size: 40px 40px;
-    mask-image: radial-gradient(circle at center, black 0%, transparent 85%);
+      linear-gradient(to right, var(--color-accent) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-accent) 1px, transparent 1px);
+    background-size: 24px 24px;
+    -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 15%, rgba(0,0,0,0) 80%);
+    mask-image: radial-gradient(circle, rgba(0,0,0,1) 15%, rgba(0,0,0,0) 80%);
     pointer-events: none;
   }
 
-  h1, h2, h3, h4 {
+  h1, h2, h3, h4, h5, h6 {
     @apply font-kalam;
+    --color-ink: color-mix(in srgb, var(--color-accent) 32%, #F0E0DC 68%);
   }
 
   .font-hand {
     font-family: var(--font-hand);
-  }
-
-  /* Vignette */
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 99;
-    pointer-events: none;
-    background: radial-gradient(circle, transparent 80%, color-mix(in srgb, var(--color-accent), transparent 94%) 100%);
-    opacity: 0.3;
   }
 
   /* Custom Scrollbar */
@@ -99,16 +91,8 @@ html {
 }
 
 @layer utilities {
-  .sketch-filter-strong {
-    filter: url(#pencilFx) drop-shadow(4px 4px 0px rgba(0,0,0,0.2));
-  }
-
   .perspective-1000 {
     perspective: 1000px;
-  }
-
-  .brush-filter {
-    filter: url(#brushFx);
   }
 
   /* Tactile Underline */
@@ -162,20 +146,7 @@ html {
       filter: none !important;
     }
   }
-  
-  /* Enable heavy filters only on desktop for performance */
-  @media (min-width: 1024px) {
-    .sketch-filter, .brush-filter {
-      transform: translateZ(0);
-      will-change: filter;
-    }
-  }
 
-  @media (max-width: 1023px) {
-    .sketch-filter, .brush-filter, .brush-filter-strong {
-      filter: none !important;
-    }
-  }
 
   /* Low Hardware / Performance Mode overrides */
   body.perf-lite {
@@ -188,16 +159,6 @@ html {
       display: none !important;
     }
 
-    /* Zero out CPU-intensive SVG displacement filter rendering */
-    .sketch-filter, 
-    .brush-filter, 
-    .sketch-filter-strong, 
-    .brush-filter-strong {
-      filter: none !important;
-      transform: none !important;
-      box-shadow: none !important;
-    }
-    
     /* Completely remove transitions, animations, filters, and blurs to ensure perfect instant rendering and zero flickering */
     *, ::before, ::after {
       transition: none !important;

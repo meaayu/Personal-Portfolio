@@ -1,26 +1,27 @@
-import React, { useState, useMemo } from 'react';
-import { PROJECTS } from '../constants';
+import React, { useState, useMemo, memo } from 'react';
+import { PROJECTS as ALL_PROJECTS } from '../constants';
 import { ProjectData } from '../types';
 import { cn } from '../lib/utils';
 import { ExternalLink, Play, Sparkles, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface ProjectsProps {
+  projects?: ProjectData[];
   onOpenProject: (id: string) => void;
 }
 
 const MAIN_CATEGORIES = ['Dev', 'Art'] as const;
 
-export default function Projects({ onOpenProject }: ProjectsProps) {
+export default memo(function Projects({ projects = ALL_PROJECTS, onOpenProject }: ProjectsProps) {
   const [activeTab, setActiveTab] = useState<'Dev' | 'Art'>('Dev');
   const [showAll, setShowAll] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
  
   // Filter projects first by main category
-  const projectsInTab = useMemo(() => PROJECTS.filter(p => {
+  const projectsInTab = useMemo(() => projects.filter(p => {
     if (activeTab === 'Dev') return p.category === 'Web Dev';
     return p.category !== 'Web Dev';
-  }), [activeTab]);
+  }), [activeTab, projects]);
   
   const DISPLAY_LIMIT = 6;
   const visibleProjects = useMemo(() => 
@@ -38,7 +39,7 @@ export default function Projects({ onOpenProject }: ProjectsProps) {
     }
   };
 
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -48,7 +49,7 @@ export default function Projects({ onOpenProject }: ProjectsProps) {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: any = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
   };
@@ -93,7 +94,7 @@ export default function Projects({ onOpenProject }: ProjectsProps) {
                 {activeTab === tab && (
                   <motion.div 
                     layoutId="main-tab-bg"
-                    className="absolute inset-0 bg-accent shadow-sm -z-10 sketch-filter"
+                    className="absolute inset-0 bg-accent shadow-sm -z-10"
                     transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
                     style={{ clipPath: 'polygon(1.5% 2.5%, 98.5% 1.5%, 100% 97.5%, 0% 96.5%)' }}
                   />
@@ -136,7 +137,7 @@ export default function Projects({ onOpenProject }: ProjectsProps) {
       >
         <button
           onClick={handleShowMore}
-          className="group relative inline-flex items-center justify-center gap-3 py-3 px-8 font-hand text-[0.95rem] md:text-[1rem] font-bold text-ink border-2 border-pencil-light/40 rounded-sm hover:-translate-y-1 hover:border-accent hover:text-accent shadow-sm hover:shadow-[4px_4px_0_rgba(212,105,58,0.2)] transition-all overflow-hidden sketch-filter bg-paper/60 backdrop-blur-sm"
+          className="group relative inline-flex items-center justify-center gap-3 py-3 px-8 font-hand text-[0.95rem] md:text-[1rem] font-bold text-ink border-2 border-pencil-light/40 rounded-sm hover:-translate-y-1 hover:border-accent hover:text-accent shadow-sm hover:shadow-[4px_4px_0_rgba(212,105,58,0.2)] transition-all overflow-hidden bg-paper"
           style={{ clipPath: 'polygon(1% 0, 100% 1%, 99% 100%, 0 98%)' }}
         >
           <span className="relative z-10 flex items-center gap-2.5 tracking-widest uppercase mt-0.5">
@@ -168,7 +169,7 @@ export default function Projects({ onOpenProject }: ProjectsProps) {
             animate={{ opacity: 1, y: 0, scale: 1, rotate: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9, rotate: 0 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed bottom-[85px] left-4 right-4 md:left-auto md:bottom-10 md:right-32 z-[500] p-4 md:p-5 bg-paper-light border-2 border-accent text-ink rounded-lg shadow-[4px_4px_0_0_var(--color-accent)] sketch-filter flex flex-col gap-1.5 overflow-hidden mx-auto md:mx-0 max-w-[calc(100vw-2rem)] md:max-w-sm"
+            className="fixed bottom-[85px] left-4 right-4 md:left-auto md:bottom-10 md:right-32 z-[500] p-4 md:p-5 bg-paper-light border-2 border-accent text-ink rounded-lg shadow-[4px_4px_0_0_var(--color-accent)] flex flex-col gap-1.5 overflow-hidden mx-auto md:mx-0 max-w-[calc(100vw-2rem)] md:max-w-sm"
           >
             <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-accent" />
             <div className="flex justify-between items-center">
@@ -180,7 +181,7 @@ export default function Projects({ onOpenProject }: ProjectsProps) {
       </AnimatePresence>
     </motion.section>
   );
-}
+});
 
 interface ProjectCardProps {
   project: ProjectData;
@@ -204,11 +205,9 @@ function ProjectCard({ project, index, onClick }: ProjectCardProps) {
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      whileHover={{ y: -8 }}
-      style={{ boxShadow: 'var(--shadow-card)' }}
       className={cn(
-        "relative bg-paper-light rounded-2xl border-2 border-pencil-light/60 transition-all duration-300 cursor-pointer group flex flex-col h-full gpu overflow-hidden",
-        "hover:[box-shadow:var(--shadow-hover)] hover:border-accent/40"
+        "relative bg-paper-light rounded-2xl border-2 border-solid border-pencil-light transition-all duration-300 cursor-pointer group flex flex-col h-full gpu overflow-hidden shadow-[6px_6px_0_0_var(--color-pencil-light)]",
+        "hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_0_var(--color-accent)] hover:border-accent"
       )}
     >
       {/* Decorative Corner Fold (Subtle) */}

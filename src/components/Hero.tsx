@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { Github, Mail, Code, PenTool, Sparkles, Heart, Activity, Cpu, Zap, Sliders, Grid, Check, MapPin } from 'lucide-react';
 import { smoothScrollTo } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
-import avatarImg from '../assets/avatar.png';
 import AayuParticleText from './AayuParticleText';
+import avatarImg from '../assets/avatar.png';
 import { usePerformanceMode } from '../hooks/usePerformanceMode';
 
 interface HeroProps {
   isLoading?: boolean;
+  liveStatus?: string;
+  avatarUrl?: string;
 }
 
-export default function Hero({ isLoading = false }: HeroProps) {
+export default memo(function Hero({ isLoading = false, liveStatus, avatarUrl }: HeroProps) {
   const [kathmanduTime, setKathmanduTime] = useState<string>('');
   const [hoveredCard, setHoveredCard] = useState<'sketch' | 'code' | null>(null);
 
@@ -197,7 +199,7 @@ export function ActivePencil() {
            {/* Beautiful rustic avatar block */}
            <div className="w-[72px] h-[72px] md:w-[84px] md:h-[84px] rounded-[24%] overflow-hidden relative shrink-0 shadow-lg group transition-transform duration-300 hover:scale-104 gpu">
               <img
-                src={avatarImg}
+                src={avatarUrl && avatarUrl.trim() !== '' ? avatarUrl : avatarImg}
                 alt="Aayu"
                 loading="lazy"
                 decoding="async"
@@ -206,17 +208,13 @@ export function ActivePencil() {
               <div className="absolute inset-0 border border-accent/15 rounded-[24%] pointer-events-none group-hover:border-accent/40 transition-colors" />
            </div>
 
-           <div className="flex flex-col gap-1">
-             <div className="bg-accent/8 border border-accent/15 text-accent px-3 py-0.5 rounded-full flex items-center gap-1.5 font-hand text-[0.82rem] tracking-wider select-none w-fit">
-               <span className="w-1.5 h-1.5 rounded-full bg-accent relative flex shrink-0">
-                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75 animate"></span>
-                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent"></span>
-               </span>
-               Available for work
+           <div className="flex flex-col ml-2 border-l-2 border-pencil-light/40 pl-4 py-1 justify-center gap-[2px] italic">
+             <span className="font-mono text-[0.68rem] text-ink tracking-[0.25em] uppercase font-bold opacity-90">Developer</span>
+             <div className="flex items-center relative -ml-[17px]">
+               <div className="w-3 h-[2px] bg-accent/60 mr-2" />
+               <span className="font-mono text-accent text-[0.9rem] font-bold leading-none">×</span>
              </div>
-             <span className="font-mono text-[0.68rem] text-ink-dim tracking-[0.2em] uppercase pl-1 opacity-90 mt-0.5">
-               Developer <span className="text-accent/60 mx-1">×</span> Artist
-             </span>
+             <span className="font-mono text-[0.68rem] text-ink tracking-[0.25em] uppercase font-bold opacity-90">Artist</span>
            </div>
         </div>
 
@@ -236,6 +234,12 @@ export function ActivePencil() {
                 </span>
                 Kathmandu: {kathmanduTime}
               </span>
+              
+              {liveStatus && (
+                <span className="flex items-center gap-1.5 font-mono text-[0.68rem] font-bold text-ink px-3 py-1 bg-pencil-light/10 border border-pencil-light/30 rounded-md tracking-wider shadow-2xs">
+                  {liveStatus}
+                </span>
+              )}
             </div>
           )}
 
@@ -250,7 +254,7 @@ export function ActivePencil() {
           <a
              href="#work"
              onClick={(e) => { e.preventDefault(); smoothScrollTo('work'); }}
-             className="group relative inline-flex items-center gap-2.5 py-2.5 px-7 font-hand font-bold text-pencil-dark bg-accent rounded-sm shadow-[2px_3px_0_rgba(0,0,0,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:translate-x-0.5 hover:shadow-[3px_4px_0_rgba(0,0,0,0.16)] bg-[linear-gradient(135deg,rgba(255,255,255,0.12)_0%,transparent_100%)] text-[0.95rem] border-0 select-none cursor-pointer sketch-filter"
+             className="group relative inline-flex items-center gap-2.5 py-2.5 px-7 font-hand font-bold text-pencil-dark bg-accent rounded-xl transition-all duration-200 hover:-translate-y-[2px] border-2 border-solid border-pencil-light hover:border-accent text-[0.95rem] select-none cursor-pointer"
              style={{ clipPath: 'polygon(0% 2%, 2% 0%, 98% 1%, 100% 4%, 99% 96%, 98% 100%, 2% 99%, 0% 96%)' }}
           >
             Explore Projects
@@ -263,7 +267,7 @@ export function ActivePencil() {
             <a
                href="#contact"
                onClick={(e) => { e.preventDefault(); smoothScrollTo('contact'); }}
-               className="flex items-center gap-2 py-2.5 px-5.5 font-hand text-ink-dim border border-dashed border-ink/25 rounded-sm transition-all duration-150 hover:bg-white/5 hover:text-ink hover:-translate-y-0.5 text-[0.95rem] sketch-filter btn-sketch-hover cursor-pointer"
+               className="flex items-center gap-2 py-2.5 px-5.5 font-hand text-ink-dim border-2 border-solid border-pencil-light shadow-[4px_4px_0_0_var(--color-pencil-light)] rounded-xl transition-all duration-150 hover:bg-white/5 hover:text-ink hover:-translate-y-[2px] hover:-translate-x-[2px] hover:shadow-[6px_6px_0_0_var(--color-accent)] hover:border-accent text-[0.95rem] cursor-pointer"
             >
                Say Hello
             </a>
@@ -279,7 +283,7 @@ export function ActivePencil() {
                   target="_blank"
                   rel="noopener"
                   aria-label={social.label}
-                  className="w-[34px] h-[34px] flex items-center justify-center border border-dashed border-ink/25 text-ink-dim rounded-sm transition-all duration-150 hover:text-accent hover:border-accent hover:bg-accent/5 hover:-translate-y-0.5 sketch-filter btn-sketch-hover"
+                  className="w-[34px] h-[34px] flex items-center justify-center border border-dashed border-ink/25 text-ink-dim rounded-sm transition-all duration-150 hover:text-accent hover:border-accent hover:bg-accent/5 hover:-translate-y-0.5 btn-sketch-hover"
                   style={{ clipPath: 'polygon(0% 6%, 2% 0%, 98% 1%, 100% 6%, 99% 94%, 97% 100%, 3% 99%, 0% 94%)' }}
                 >
                   {social.icon}
@@ -300,8 +304,8 @@ export function ActivePencil() {
             <span className="font-hand text-[0.85rem] text-ink-dim uppercase tracking-[0.2em] -ml-2">Scroll To Explore</span>
             <svg width="24" height="40" viewBox="0 0 100 150" className="text-accent origin-top animate-pulse" xmlns="http://www.w3.org/2000/svg">
               {/* Hand-drawn curly arrow down */}
-              <path d="M 50,10 C 60,40 20,80 50,130" stroke="currentColor" strokeWidth="4" strokeLinecap="round" fill="none" className="sketch-filter" />
-              <path d="M 35,115 L 50,135 L 75,110" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" className="sketch-filter" />
+              <path d="M 50,10 C 60,40 20,80 50,130" stroke="currentColor" strokeWidth="4" strokeLinecap="round" fill="none" />
+              <path d="M 35,115 L 50,135 L 75,110" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
             </svg>
           </div>
         </motion.div>
@@ -309,7 +313,7 @@ export function ActivePencil() {
 
       {/* RIGHT COLUMN: Overlapping, Beautifully Interactive Code & Calibration Card Deck */}
       <div 
-        className="flex md:flex relative items-center justify-center h-[380px] md:h-full mt-6 md:mt-0 min-h-[380px] md:min-h-[460px] md:pl-10"
+        className="hidden md:flex relative items-center justify-center h-[380px] md:h-full mt-6 md:mt-0 min-h-[380px] md:min-h-[460px] md:pl-10"
         onMouseLeave={() => {
           setHoveredCard(null);
         }}
@@ -416,7 +420,7 @@ export function ActivePencil() {
                   e.stopPropagation();
                   setQuoteIndex((prev) => (prev + 1) % quotes.length);
                 }}
-                className="py-1 px-3 rounded-xs border border-accent/25 bg-accent/8 hover:bg-accent text-accent hover:text-pencil-dark font-hand font-bold text-[0.82rem] transition-all duration-200 cursor-pointer shadow-2xs flex items-center gap-1 active:scale-95 sketch-filter"
+                className="py-1 px-3 rounded-xs border border-accent/25 bg-accent/8 hover:bg-accent text-accent hover:text-pencil-dark font-hand font-bold text-[0.82rem] transition-all duration-200 cursor-pointer shadow-2xs flex items-center gap-1 active:scale-95"
                 style={{ clipPath: 'polygon(1% 0%, 99% 2%, 98% 97%, 95% 100%, 3% 98%, 0% 4%)' }}
               >
                 Next &rarr;
@@ -504,4 +508,4 @@ export function ActivePencil() {
 
     </header>
   );
-}
+});

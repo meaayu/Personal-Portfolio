@@ -18,7 +18,7 @@ export default function Loader({ onComplete }: LoaderProps) {
   // Letters of the logo "Aayu"
   const letters = ["A", "a", "y", "u"];
 
-  const containerVariants = {
+  const containerVariants: any = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -29,7 +29,7 @@ export default function Loader({ onComplete }: LoaderProps) {
     }
   };
 
-  const letterVariants = {
+  const letterVariants: any = {
     hidden: {
       opacity: 0,
       scale: 0.65,
@@ -48,7 +48,7 @@ export default function Loader({ onComplete }: LoaderProps) {
     }
   };
 
-  const underlineVariants = {
+  const underlineVariants: any = {
     hidden: { pathLength: 0, opacity: 0, scale: 0.95 },
     visible: {
       pathLength: 1,

@@ -33,60 +33,6 @@ export default function AayuParticleText({ isLoading = false }: { isLoading?: bo
   const { liteMode, togglePerformanceMode } = usePerformanceMode();
   const [debugDimensions, setDebugDimensions] = useState({ w: 0, h: 0 });
 
-  // Interactive triggers for sandbox effects
-  const triggerScatter = () => {
-    if (document.body.classList.contains('perf-lite')) return;
-    particlesRef.current.forEach((p) => {
-      const angle = Math.random() * Math.PI * 2;
-      const force = 12 + Math.random() * 10;
-      p.vx = Math.cos(angle) * force;
-      p.vy = Math.sin(angle) * force;
-    });
-  };
-
-  const triggerWave = () => {
-    if (document.body.classList.contains('perf-lite')) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    // Wave ripple sequence from left to right
-    particlesRef.current.forEach((p) => {
-      const delay = p.destX * 2;
-      setTimeout(() => {
-        p.vy -= 14 + Math.random() * 8;
-        p.vx += (Math.random() - 0.5) * 6;
-      }, delay);
-    });
-  };
-
-  const triggerSwirl = () => {
-    if (document.body.classList.contains('perf-lite')) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    
-    particlesRef.current.forEach((p) => {
-      const dx = p.x - centerX;
-      const dy = p.y - centerY;
-      const angle = Math.atan2(dy, dx);
-      
-      const swirlForce = 8 + Math.random() * 4;
-      p.vx += -Math.sin(angle) * swirlForce;
-      p.vy += Math.cos(angle) * swirlForce;
-    });
-  };
-
-  const triggerReassemble = () => {
-    if (document.body.classList.contains('perf-lite')) return;
-    startTimeRef.current = Date.now() - 3000;
-    particlesRef.current.forEach((p) => {
-      p.vx = 0;
-      p.vy = 0;
-      p.activationTime = 0; // force immediate spring snapping
-    });
-  };
-
   // Function to scan the text pixels and initiate/update particles
   const scanText = (width: number, height: number, dpr: number, isInitial: boolean) => {
     if (width <= 0 || height <= 0) return;
@@ -370,10 +316,20 @@ export default function AayuParticleText({ isLoading = false }: { isLoading?: bo
     canvas.addEventListener('click', handleCanvasClick);
 
     let animationId: number;
+    let isVisible = true;
     const ctx = canvas.getContext('2d', { alpha: true });
+    
+    const visibilityObserver = new IntersectionObserver((entries) => {
+      isVisible = entries[0].isIntersecting;
+      if (isVisible) {
+        startTimeRef.current = Date.now() - 3000; // Fast forward re-activation
+        animationId = requestAnimationFrame(tick);
+      }
+    });
+    visibilityObserver.observe(container);
 
     const tick = () => {
-      if (!ctx || !canvas) return;
+      if (!ctx || !canvas || !isVisible) return;
 
       // Silky smooth background wipe
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -510,6 +466,7 @@ export default function AayuParticleText({ isLoading = false }: { isLoading?: bo
     tick();
 
     return () => {
+      visibilityObserver.disconnect();
       resizeObserver.disconnect();
       clearTimeout(timeout1);
       clearTimeout(timeout2);
@@ -524,7 +481,7 @@ export default function AayuParticleText({ isLoading = false }: { isLoading?: bo
   return (
     <div 
       ref={containerRef} 
-      className="relative w-full h-[88px] sm:h-[100px] md:h-[110px] overflow-hidden group select-none cursor-crosshair"
+      className="relative w-full h-[88px] sm:h-[100px] md:h-[110px] overflow-hidden select-none cursor-crosshair group"
     >
       <canvas 
         ref={canvasRef}

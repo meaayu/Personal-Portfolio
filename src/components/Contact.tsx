@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, Github, Instagram, Send } from 'lucide-react';
 
-export default function Contact() {
+export default memo(function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [errors, setErrors] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,12 +108,12 @@ export default function Contact() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          style={{ boxShadow: 'var(--shadow-card)' }}
           onSubmit={handleSubmit} 
-          className="flex flex-col gap-6 p-8 md:p-10 bg-paper-light relative rounded-2xl border-2 border-pencil-light/60 overflow-visible group gpu will-change-transform transition-all duration-300 hover:[box-shadow:var(--shadow-hover)]"
+          className="flex flex-col gap-6 p-8 md:p-10 bg-paper-light relative rounded-2xl border-2 border-solid border-pencil-light overflow-visible group gpu shadow-[6px_6px_0_0_var(--color-pencil-light)] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[8px_8px_0_0_var(--color-accent)] hover:border-accent transition-all duration-300"
         >
            {/* Tactical Paper Overhang */}
-           <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-5 py-1.5 bg-paper border-2 border-pencil-light/80 z-10 font-marker text-[0.6rem] text-accent/80 flex items-center justify-center tracking-[0.3em] shadow-sm rotate-1 rounded-md">
+           <div className="absolute -top-4 md:-top-6 right-6 md:right-10 px-5 py-2 md:py-2.5 bg-accent text-charcoal font-bold border-2 border-pencil-light z-10 font-marker text-[0.7rem] md:text-[0.8rem] flex items-center justify-center tracking-[0.2em] shadow-[4px_4px_0_0_var(--color-pencil-light)] rotate-[4deg] rounded-sm transition-all duration-300 group-hover:rotate-[7deg] group-hover:-translate-y-1 group-hover:shadow-[6px_6px_0_0_var(--color-pencil-dark)]">
+             <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-6 md:w-8 h-3.5 md:h-4 bg-white/30 border border-white/40 -rotate-[8deg] transform shadow-sm z-20 backdrop-blur-sm rounded-[1px]"></div>
              MESSAGE_SLIP
            </div>
 
@@ -179,8 +179,8 @@ export default function Contact() {
              type="submit"
              disabled={isSubmitting}
              className={cn(
-               "w-full md:w-auto self-end mt-2 p-4 px-12 font-marker tracking-widest text-[0.95rem] text-pencil-dark bg-accent rounded-xl shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:grayscale disabled:pointer-events-none cursor-pointer group flex items-center justify-center gap-3 border-2 border-transparent hover:border-accent/40",
-               isSent && "text-white bg-green-600 shadow-md hover:shadow-lg"
+               "w-full md:w-auto self-end mt-2 p-4 px-12 font-marker tracking-widest text-[0.95rem] text-pencil-dark bg-accent rounded-xl shadow-[4px_4px_0_0_var(--color-pencil-light)] hover:shadow-[6px_6px_0_0_var(--color-accent)] transition-all duration-300 disabled:opacity-50 disabled:grayscale disabled:pointer-events-none cursor-pointer group flex items-center justify-center gap-3 border-2 border-solid border-pencil-light hover:border-accent hover:-translate-y-[2px] hover:-translate-x-[2px]",
+               isSent && "text-white bg-green-600 border-green-700 shadow-[4px_4px_0_0_var(--color-pencil-light)]"
              )}
            >
              <AnimatePresence mode="wait">
@@ -222,4 +222,4 @@ export default function Contact() {
       </div>
     </section>
   );
-}
+});

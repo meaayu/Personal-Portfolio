@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { cn } from '../lib/utils';
 import { motion } from 'motion/react';
 import { PenTool, Eye } from 'lucide-react';
@@ -72,7 +72,7 @@ const skills: Skill[] = [
   }
 ];
 
-export default function Skills() {
+export default memo(function Skills() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   return (
@@ -118,7 +118,7 @@ export default function Skills() {
             onMouseLeave={() => setHoveredCard(null)}
             className={cn(
               "group relative bg-paper-light p-6 sm:p-8 rounded-2xl transition-all duration-400 border-2 overflow-hidden",
-              "border-pencil-light/65 shadow-sm hover:shadow-md hover:border-accent/50 hover:-translate-y-1"
+              "border-solid border-pencil-light shadow-[6px_6px_0_0_var(--color-pencil-light)] hover:border-accent hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_0_var(--color-accent)]"
             )}
           >
             {/* Skill Identifier Tag */}
@@ -182,5 +182,5 @@ export default function Skills() {
       </div>
     </motion.section>
   );
-}
+});
 

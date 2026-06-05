@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Github, Instagram, Mail, User } from 'lucide-react';
 import { cn } from '../lib/utils';
-import ThemeSwitcher from './ThemeToggle';
 
 const SOCIALS = [
   { name: 'Instagram', icon: Instagram, url: 'https://instagram.com/m__aayu__' },
@@ -19,7 +18,7 @@ export default function SocialSidebar() {
   };
 
   return (
-    <div className="fixed left-4 md:left-6 xl:left-8 bottom-0 z-[200] hidden md:flex flex-col items-center gap-6 md:gap-8 gpu">
+    <div className="fixed left-4 md:left-6 xl:left-8 bottom-0 z-[200] hidden lg:flex flex-col items-center gap-6 md:gap-8 gpu">
       <div className="flex flex-col items-center gap-6">
         {/* Resume Button */}
         <motion.div
@@ -36,8 +35,8 @@ export default function SocialSidebar() {
             onClick={handleResumeClick}
             className={cn(
               "relative flex items-center justify-center w-11 h-11",
-              "bg-paper border-2 border-pencil-light/60 text-accent rounded-sm shadow-card",
-              "transition-all duration-300 hover:border-accent hover:shadow-hover overflow-hidden"
+              "bg-paper border-2 border-solid border-pencil-light text-accent rounded-xl shadow-[4px_4px_0_0_var(--color-pencil-light)]",
+              "transition-all duration-300 hover:border-accent hover:shadow-[6px_6px_0_0_var(--color-accent)] hover:-translate-x-[2px] hover:-translate-y-[2px] overflow-hidden"
             )}
           >
             {/* Sketchy background inside button */}
@@ -83,11 +82,6 @@ export default function SocialSidebar() {
             </span>
           )}
         </motion.div>
-
-        {/* Theme Switcher */}
-        <div className="hidden md:flex mb-6 opacity-80 hover:opacity-100 transition-opacity">
-          <ThemeSwitcher iconOnly={true} />
-        </div>
 
         {/* Social Icons (Hidden on mobile) */}
         <div className="hidden md:flex flex-col items-center gap-5">

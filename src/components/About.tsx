@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, ArrowRight } from 'lucide-react';
 
 const OBSESSIONS = [
   {
-    name: "VS Code",
+    name: "Zed",
     tag: "Core Engine",
     index: "01",
-    desc: "Where code breathes & warm custom syntax schemes keep eyes safe."
+    desc: "Lightning fast coding environment."
   },
   {
     name: "Figma",
@@ -35,7 +35,7 @@ const OBSESSIONS = [
   }
 ];
 
-export default function About() {
+export default memo(function About() {
   const [activeIdx, setActiveIdx] = useState<number | null>(0);
 
   return (
@@ -81,7 +81,7 @@ export default function About() {
         </div>
 
         {/* Right Column: Minimalist interactive daily toolkit obsessions */}
-        <div className="flex flex-col justify-between p-8 md:p-10 bg-paper-light border-2 border-pencil-light/60 rounded-2xl relative shadow-sm hover:shadow-md transition-all duration-300 flex-grow gpu">
+        <div className="flex flex-col justify-between p-8 md:p-10 bg-paper-light border-2 border-solid border-pencil-light rounded-2xl relative shadow-[6px_6px_0_0_var(--color-pencil-light)] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[8px_8px_0_0_var(--color-accent)] hover:border-accent transition-all duration-300 flex-grow gpu">
           
           <div className="flex items-center justify-between border-b-2 border-dashed border-pencil-light/15 pb-4 mb-6 select-none">
             <span className="font-mono text-[0.65rem] font-black text-ink-faint uppercase tracking-widest flex items-center gap-1.5">
@@ -138,13 +138,7 @@ export default function About() {
             </AnimatePresence>
           </div>
 
-          {/* Subtle signature metadata in card bottom */}
-          <div className="mt-6 pt-4 border-t-2 border-dashed border-pencil-light/15 flex items-center justify-between font-mono text-[0.55rem] text-ink-faint select-none">
-            <span>TOOLKIT_SYS_V2.0</span>
-            <span className="flex items-center gap-1 text-accent opacity-80 group hover:translate-x-0.5 transition-transform duration-300">
-              CRAFT OVER SYSTEM NOISE <ArrowRight size={10} className="transition-transform group-hover:translate-x-0.5" />
-            </span>
-          </div>
+
 
         </div>
 
@@ -152,4 +146,4 @@ export default function About() {
 
     </motion.section>
   );
-}
+});
