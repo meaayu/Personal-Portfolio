@@ -323,13 +323,6 @@ export function ActivePencil() {
 
         <div className="relative w-full max-w-[420px] h-full flex items-center justify-center">
           
-          {/* Paperclip design ornament */}
-          <div className="absolute top-[-25px] right-[45px] z-40 rotate-[-12deg] pointer-events-none select-none text-accent/30 hover:text-accent/60 transition-colors">
-            <svg width="28" height="42" viewBox="0 0 24 40" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <path d="M12,4 L12,30 A6,6 0 0,0 24,30 L24,12 A3,3 0 0,0 18,12 L18,26 A1,1 0 0,0 20,26 L20,14" />
-            </svg>
-          </div>
-
           {/* --- LAYER 1: THE INSPIRATIONAL QUOTES CARD --- */}
           <motion.div
             initial={{ opacity: 0 }}

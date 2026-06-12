@@ -93,7 +93,7 @@ export default function Portfolio() {
           <Hero isLoading={isLoading} liveStatus={appSettings?.liveStatus} avatarUrl={appSettings?.avatarUrl} />
           <SectionDivider type="wave" />
           
-          <Suspense fallback={<div className="h-20" />}>
+          <Suspense fallback={<div className="h-[50vh] flex items-center justify-center"><div className="w-8 h-8 rounded-full border-2 border-accent border-t-transparent animate-spin" /></div>}>
             <Skills />
             <SectionDivider type="wave" className="rotate-180" />
             

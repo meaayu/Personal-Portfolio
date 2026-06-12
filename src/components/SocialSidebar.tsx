@@ -63,7 +63,7 @@ export default function SocialSidebar() {
                 )}
               >
                 <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-4 bg-accent/30 rotate-1" />
-                <span className="relative z-10">Sketching my CV...</span>
+                <span className="relative z-10">Building workspace...</span>
                 <span className="text-[0.6rem] opacity-70 mt-0.5">Will be ready soon!</span>
               </motion.div>
             )}
@@ -78,7 +78,7 @@ export default function SocialSidebar() {
                 "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none origin-left"
               )}
             >
-              Resume
+              AAYU PERSONAL WORKSPACE
             </span>
           )}
         </motion.div>

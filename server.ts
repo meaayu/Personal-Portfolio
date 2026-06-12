@@ -17,14 +17,12 @@ async function startServer() {
 
   // Memory storage for chats and settings
   const chatSessions: Record<string, { role: string; text: string; timestamp: number }[]> = {};
-  const humanTakeoverMap: Record<string, boolean> = {};
   const appSettings = {
     chatBotEnabled: true,
     performanceModeDefault: false,
     maintenanceMode: false,
-    liveStatus: "🟢 Open to work",
+    liveStatus: "",
     accentColor: "#FFB59D",
-    adminPassword: "becreative123",
     avatarUrl: "",
     hiddenProjects: [] as string[],
     systemPrompt: `You are Aayu, a developer and sketch artist from Kathmandu, Nepal. You are currently chatting with a visitor on your portfolio website.
@@ -49,75 +47,7 @@ Important Rules:
 
   // Settings API routes
   app.get("/api/settings", (req, res) => {
-    const { adminPassword, ...safeSettings } = appSettings;
-    res.json(safeSettings);
-  });
-
-  app.post("/api/admin/auth", (req, res) => {
-    if (req.body.password === appSettings.adminPassword) {
-      res.json({ success: true });
-    } else {
-      res.status(401).json({ error: "Incorrect password" });
-    }
-  });
-
-  app.post("/api/admin/password", (req, res) => {
-    const { currentPassword, newPassword } = req.body;
-    if (currentPassword === appSettings.adminPassword) {
-      appSettings.adminPassword = newPassword;
-      res.json({ success: true });
-    } else {
-      res.status(401).json({ error: "Incorrect current password" });
-    }
-  });
-
-  app.post("/api/admin/settings", (req, res) => {
-    const { settings } = req.body;
-    if (settings) {
-      if (settings.chatBotEnabled !== undefined) appSettings.chatBotEnabled = settings.chatBotEnabled;
-      if (settings.performanceModeDefault !== undefined) appSettings.performanceModeDefault = settings.performanceModeDefault;
-      if (settings.maintenanceMode !== undefined) appSettings.maintenanceMode = settings.maintenanceMode;
-      if (settings.liveStatus !== undefined) appSettings.liveStatus = settings.liveStatus;
-      if (settings.accentColor !== undefined) appSettings.accentColor = settings.accentColor;
-      if (settings.hiddenProjects !== undefined) appSettings.hiddenProjects = settings.hiddenProjects;
-      if (settings.systemPrompt !== undefined) appSettings.systemPrompt = settings.systemPrompt;
-      if (settings.avatarUrl !== undefined) appSettings.avatarUrl = settings.avatarUrl;
-    }
-    res.json({ success: true, settings: appSettings });
-  });
-
-  app.post("/api/admin/avatar", (req, res) => {
-    const { imageBase64, filename } = req.body;
-    if (!imageBase64) {
-      return res.status(400).json({ error: "Image data is required" });
-    }
-    
-    try {
-      const match = imageBase64.match(/^data:image\/(png|jpeg|jpg|webp|gif);base64,(.+)$/);
-      if (!match) {
-         return res.status(400).json({ error: "Invalid image format" });
-      }
-      const ext = match[1];
-      const base64Data = match[2];
-      
-      const publicDir = path.join(process.cwd(), 'public');
-      if (!fs.existsSync(publicDir)) {
-        fs.mkdirSync(publicDir, { recursive: true });
-      }
-      
-      const fileName = `custom-avatar.${ext}`;
-      const filePath = path.join(publicDir, fileName);
-      
-      fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
-      
-      const avatarUrl = `/${fileName}?v=${Date.now()}`;
-      appSettings.avatarUrl = avatarUrl;
-      
-      res.json({ success: true, avatarUrl });
-    } catch (err: any) {
-      console.error("Failed to save avatar image", err);
-      res.status(500).json({ error: "Failed to save avatar image" });
-    }
+    res.json(appSettings);
   });
 
   // Chat API route
@@ -142,10 +72,6 @@ Important Rules:
 
       if (!appSettings.chatBotEnabled) {
         return res.status(403).json({ error: "Chatbot is currently disabled." });
-      }
-
-      if (humanTakeoverMap[sid]) {
-        return res.status(403).json({ error: "HUMAN_TAKEOVER" });
       }
 
       // @ts-ignore - dynamic import or require might be used but GenAI should be available if imported at top
@@ -202,24 +128,6 @@ Important Rules:
         res.end();
       }
     }
-  });
-
-  // Admin routes API
-  app.get("/api/admin/chats", (req, res) => {
-    res.json({ sessions: chatSessions });
-  });
-
-  app.post("/api/admin/reply", (req, res) => {
-    const { sessionId, message } = req.body;
-    if (!sessionId || !message) {
-      return res.status(400).json({ error: "Session ID and message required" });
-    }
-    if (!chatSessions[sessionId]) {
-      return res.status(404).json({ error: "Session not found" });
-    }
-    humanTakeoverMap[sessionId] = true;
-    chatSessions[sessionId].push({ role: 'admin', text: message, timestamp: Date.now() });
-    res.json({ success: true });
   });
 
   app.get("/api/chat/:sessionId", (req, res) => {

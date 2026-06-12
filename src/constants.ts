@@ -1,7 +1,6 @@
 import { ProjectData } from './types';
 import portfolioImg from './assets/project/portfolio.png';
 import dot8Img from './assets/project/Dot-8.png';
-import artslabImg from './assets/project/artslab.png';
 import practice1 from './assets/project/practice1.jpg';
 import practice2 from './assets/project/practice2.jpg';
 import practice3 from './assets/project/practice3.jpg';
@@ -73,7 +72,7 @@ export const PROJECTS: ProjectData[] = [
     images: [
       dot8Img
     ],
-    link: 'https://dot-8.netlify.app/',
+    link: '/dot-8',
     linkText: 'CONVERT NOW ↗',
     views: 2154,
     items: [
@@ -81,27 +80,43 @@ export const PROJECTS: ProjectData[] = [
       { title: 'Optimized Flow', body: 'Built for speed, allowing users to transform their desktop aesthetic in seconds.' },
     ],
     footerNote: '✦ Live production tool',
-    footerLink: 'https://dot-8.netlify.app/',
+    footerLink: '/dot-8',
   },
   {
     id: '5',
     category: 'Web Dev',
-    title: 'Arts Lab',
-    panelType: 'Learning Platform',
-    desc: 'A resource for artists to master structure, anatomy, and spatial perspective.',
-    tags: ['Learning', 'Art Theory', 'Interactive'],
-    images: [
-      artslabImg
-    ],
-    link: 'https://arts-lab.netlify.app/',
-    linkText: 'START LEARNING ↗',
-    views: 942,
+    title: 'ASCII-Gen',
+    panelType: 'ASCII Utility',
+    desc: 'An image filter tool that converts your photos into stylized ASCII art.',
+    tags: ['React', 'Canvas API'],
+    images: [],
+    link: '/ascii-gen',
+    linkText: 'INITIALIZE ENGINE ↗',
+    views: 890,
     items: [
-      { title: 'Structural Mastery', body: 'Break down complex forms into basic 3D shapes for better volume understanding.' },
-      { title: 'Dynamic Anatomy', body: 'Modules for head anatomy and gestural construction for believable characters.' },
+      { title: 'Character Density', body: 'Tune the resolution and character density mapped to pixel luminance.' },
+      { title: 'Terminal Themes', body: 'Switch between curated authentic retro hardware color palettes.' },
     ],
-    footerNote: '✦ Educational tool for artists',
-    footerLink: 'https://arts-lab.netlify.app/',
+    footerNote: '✦ Offline real-time processing',
+    footerLink: '/ascii-gen',
+  },
+  {
+    id: '6',
+    category: 'Web Dev',
+    title: 'Aesthetic Wallpapers',
+    panelType: 'Web Utility',
+    desc: 'An aesthetically curated gallery of high-resolution digital wallpapers.',
+    tags: ['React', 'Gallery', 'Curation'],
+    images: [],
+    link: '/wallpapers',
+    linkText: 'VIEW GALLERY ↗',
+    views: 420,
+    items: [
+      { title: 'Visual Curation', body: 'A hand-picked selection of visually striking digital environments.' },
+      { title: 'Smooth Interaction', body: 'Features horizontal drag-scrolling and immersive lightbox overlays.' },
+    ],
+    footerNote: '✦ Regularly updated collection',
+    footerLink: '/wallpapers',
   },
 ];
 

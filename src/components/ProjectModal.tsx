@@ -4,6 +4,7 @@ import { ProjectData } from '../types';
 import { cn, throttle } from '../lib/utils';
 import { motion, AnimatePresence, useScroll, useSpring, useTransform, useDragControls } from 'motion/react';
 import { usePerformanceMode } from '../hooks/usePerformanceMode';
+import { Link } from 'react-router-dom';
 
 interface ProjectModalProps {
   project: ProjectData | null;
@@ -205,18 +206,32 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
 
               <div className="flex items-center gap-3.5 md:gap-5">
                 {project.link && (
-                  <motion.a 
-                    whileTap={{ scale: 0.95 }}
-                    href={project.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-1.5 border-2 border-solid border-pencil-light bg-accent/5 hover:bg-accent/15 rounded-xl transition-all duration-300 cursor-pointer text-ink group relative select-none shadow-[4px_4px_0_0_var(--color-pencil-light)] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[6px_6px_0_0_var(--color-accent)] hover:border-accent"
-                  >
-                    <span className="font-sans text-[0.72rem] md:text-[0.78rem] font-bold tracking-wider uppercase">
-                      Live Project
-                    </span>
-                    <ExternalLink size={11} className="text-accent group-hover:rotate-45 transition-transform duration-300 shrink-0" />
-                  </motion.a>
+                  project.link.startsWith('/') ? (
+                    <motion.div whileTap={{ scale: 0.95 }} className="inline-block">
+                      <Link 
+                        to={project.link}
+                        className="flex items-center gap-2 px-3 py-1.5 border-2 border-solid border-pencil-light bg-accent/5 hover:bg-accent/15 rounded-xl transition-all duration-300 cursor-pointer text-ink group relative select-none shadow-[4px_4px_0_0_var(--color-pencil-light)] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[6px_6px_0_0_var(--color-accent)] hover:border-accent"
+                      >
+                        <span className="font-sans text-[0.72rem] md:text-[0.78rem] font-bold tracking-wider uppercase">
+                          {project.linkText || 'Live Project'}
+                        </span>
+                        <ExternalLink size={11} className="text-accent group-hover:rotate-45 transition-transform duration-300 shrink-0" />
+                      </Link>
+                    </motion.div>
+                  ) : (
+                    <motion.a 
+                      whileTap={{ scale: 0.95 }}
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-1.5 border-2 border-solid border-pencil-light bg-accent/5 hover:bg-accent/15 rounded-xl transition-all duration-300 cursor-pointer text-ink group relative select-none shadow-[4px_4px_0_0_var(--color-pencil-light)] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[6px_6px_0_0_var(--color-accent)] hover:border-accent"
+                    >
+                      <span className="font-sans text-[0.72rem] md:text-[0.78rem] font-bold tracking-wider uppercase">
+                        {project.linkText || 'Live Project'}
+                      </span>
+                      <ExternalLink size={11} className="text-accent group-hover:rotate-45 transition-transform duration-300 shrink-0" />
+                    </motion.a>
+                  )
                 )}
                 
                 <motion.button
@@ -516,16 +531,27 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                     </p>
 
                     {project.footerLink && (
-                      <motion.a
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        href={project.footerLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex mt-4 items-center gap-2 font-mono text-[0.62rem] font-black tracking-wider uppercase text-accent bg-accent/5 border border-accent/25 px-4 py-2 rounded-xl hover:bg-accent hover:text-white hover:border-accent transition-all duration-300 shadow-xs cursor-pointer"
-                      >
-                        {project.footerLinkText || 'Watch Video ↗'}
-                      </motion.a>
+                      project.footerLink.startsWith('/') ? (
+                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="inline-block mt-4">
+                          <Link
+                            to={project.footerLink}
+                            className="inline-flex items-center gap-2 font-mono text-[0.62rem] font-black tracking-wider uppercase text-accent bg-accent/5 border border-accent/25 px-4 py-2 rounded-xl hover:bg-accent hover:text-white hover:border-accent transition-all duration-300 shadow-xs cursor-pointer"
+                          >
+                            {project.footerLinkText || 'View Project ↗'}
+                          </Link>
+                        </motion.div>
+                      ) : (
+                        <motion.a
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          href={project.footerLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex mt-4 items-center gap-2 font-mono text-[0.62rem] font-black tracking-wider uppercase text-accent bg-accent/5 border border-accent/25 px-4 py-2 rounded-xl hover:bg-accent hover:text-white hover:border-accent transition-all duration-300 shadow-xs cursor-pointer"
+                        >
+                          {project.footerLinkText || 'View Project ↗'}
+                        </motion.a>
+                      )
                     )}
                   </motion.div>
                 )}

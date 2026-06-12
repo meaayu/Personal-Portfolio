@@ -1,11 +1,10 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useMemo } from 'react';
 import { cn } from '../lib/utils';
-import { motion } from 'motion/react';
-import { PenTool, Eye } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface SkillTag {
   name: string;
-  level: number; // 0 to 100
+  level: number;
 }
 
 interface Skill {
@@ -13,6 +12,7 @@ interface Skill {
   name: string;
   description: string;
   tags: SkillTag[];
+  className?: string; // Add styling class back
   iconPath: string;
   specs: string; // Technical specification note for blueprint mode
 }
@@ -22,7 +22,7 @@ const skills: Skill[] = [
     id: '01',
     name: 'Development',
     description: 'Forging high-performance web applications, modular React engines, and responsive systems.',
-    specs: 'React 18+ • TypeScript • Tailwind • Vite',
+    specs: 'React 18+ • TypeScript • Tailwind',
     tags: [
       { name: 'React', level: 95 },
       { name: 'TypeScript', level: 90 },
@@ -35,12 +35,11 @@ const skills: Skill[] = [
     id: '02',
     name: 'Animation',
     description: 'Choreographing interactive motion systems, vector timelines, and fluid physics loops.',
-    specs: 'Framer Motion • WebAnimations • SVG',
+    specs: 'Framer Motion • Vectors',
     tags: [
-      { name: 'Framer Motion', level: 96 },
+      { name: 'Framer', level: 96 },
       { name: 'SVG Physics', level: 88 },
-      { name: '2D Timelines', level: 82 },
-      { name: 'Keyframing', level: 90 }
+      { name: '2D Timelines', level: 82 }
     ],
     iconPath: 'M5 8h26v20H5z M5 8h4v20H5z M27 8h4v20H27z M15 14l0 8l8-4z'
   },
@@ -48,12 +47,11 @@ const skills: Skill[] = [
     id: '03',
     name: 'Illustration',
     description: 'Sketching expressive digital artwork, custom design lines, and handmade visual assets.',
-    specs: 'Krita • Clip Studio • Bezier Vectors • Sketch',
+    specs: 'Krita • Clip Studio',
     tags: [
       { name: 'Digital Painting', level: 85 },
       { name: 'Bezier Assets', level: 92 },
-      { name: 'UI Vector Kit', level: 94 },
-      { name: 'Krita / Clip', level: 80 }
+      { name: 'Vector Kit', level: 94 }
     ],
     iconPath: 'M24 4l8 8-16 16-10 2 2-10 16-16z M21 7l8 8'
   },
@@ -61,10 +59,9 @@ const skills: Skill[] = [
     id: '04',
     name: 'Graphic Design',
     description: 'Designing high-contrast layouts, systematic grid rules, and elegant typography formulas.',
-    specs: 'Figma • Layout Grids • Corporate Identity',
+    specs: 'Figma • Layout Grids',
     tags: [
       { name: 'Figma System', level: 95 },
-      { name: 'UI/UX Layout', level: 92 },
       { name: 'Grid Systems', level: 96 },
       { name: 'Typography', level: 90 }
     ],
@@ -73,114 +70,167 @@ const skills: Skill[] = [
 ];
 
 export default memo(function Skills() {
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [hoveredSkillId, setHoveredSkillId] = useState<string | null>(null);
+
+  const activeSkill = useMemo(() => {
+    if (hoveredSkillId) {
+      return skills.find(s => s.id === hoveredSkillId) || skills[0];
+    }
+    return skills[0];
+  }, [hoveredSkillId]);
 
   return (
     <motion.section 
       id="skills" 
-      className="pt-8 pb-20 max-w-[1150px] mx-auto px-6 sm:px-10 relative isolate"
+      className="pt-24 pb-20 max-w-[1100px] mx-auto px-5 md:px-10 relative isolate"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8, ease: [0.215, 0.610, 0.355, 1.000] }}
+      transition={{ duration: 0.8 }}
     >
-      {/* Header and Live Controls */}
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 md:gap-10 mb-12 md:mb-16 border-b border-pencil-light/30 pb-8">
         <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="relative inline-block"
+          className="relative"
         >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="h-[2px] w-8 bg-accent/40" />
-            <span className="font-hand text-[0.8rem] tracking-[0.25em] font-bold text-accent uppercase opacity-95">01 Specifications</span>
-          </div>
-          <h2 className="font-marker text-[clamp(2.1rem,4.5vw,3.2rem)] text-ink leading-none -tracking-tight">
-            What I Craft
-          </h2>
+           <div className="flex items-center gap-3 mb-2">
+              <div className="h-[1px] w-10 bg-accent/30" />
+              <span className="font-hand text-[0.85rem] tracking-[0.3em] font-bold text-accent uppercase opacity-90">02 Toolkit</span>
+           </div>
+           <h2 className="font-marker text-[clamp(2.1rem,4.5vw,3.2rem)] text-ink leading-none -tracking-tight">Core Skills</h2>
         </motion.div>
       </div>
  
-      {/* Skills Grid */}
-      <div 
-        className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
-      >
-        {skills.map((skill, index) => (
-          <motion.div
-            key={skill.id}
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-            onMouseEnter={() => setHoveredCard(skill.id)}
-            onMouseLeave={() => setHoveredCard(null)}
-            className={cn(
-              "group relative bg-paper-light p-6 sm:p-8 rounded-2xl transition-all duration-400 border-2 overflow-hidden",
-              "border-solid border-pencil-light shadow-[6px_6px_0_0_var(--color-pencil-light)] hover:border-accent hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0_0_var(--color-accent)]"
-            )}
-          >
-            {/* Skill Identifier Tag */}
-            <div className="absolute top-5 right-6 flex items-baseline gap-1 select-none">
-              <span className="font-marker text-[2rem] text-accent/10 leading-none transition-all duration-500 group-hover:text-accent/20">
-                {skill.id}
-              </span>
-            </div>
- 
-            {/* Main Title & Description Content Block */}
-            <div className="flex flex-col gap-3 relative z-10">
-              <div className="flex items-center gap-3.5">
-                <div className={cn(
-                  "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 relative overflow-hidden shrink-0",
-                  "bg-pencil-light/10 border border-pencil-light/20 text-ink-dim group-hover:bg-accent group-hover:border-accent group-hover:text-pencil-dark group-hover:rotate-6"
-                )}>
-                  <svg
-                    viewBox="0 0 36 36"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3.2"
-                    strokeLinecap="round"
-                    className="w-6 h-6 transition-transform"
-                  >
-                     <path d={skill.iconPath} />
-                  </svg>
-                </div>
-                
-                <div className="flex flex-col">
-                  <span className={cn(
-                    "font-marker text-[1.2rem] text-ink transition-colors -tracking-wide",
-                    "group-hover:text-accent"
-                  )}>
-                    {skill.name}
-                  </span>
-                </div>
-              </div>
- 
-              {/* Description */}
-              <p className="font-hand text-[0.98rem] text-ink-dim/95 leading-relaxed pr-6 italic">
-                {skill.description}
-              </p>
-            </div>
- 
-            {/* Interactive Grid Spec (Mastery metrics / Tool boxes) */}
-            <div className="mt-5 pt-4 border-t-2 border-dashed border-pencil-light/15 relative z-10 flex flex-col gap-4">
-              <div className="flex flex-wrap gap-2">
-                {skill.tags.map((tag, i) => (
-                  <span 
-                    key={tag.name} 
-                    className="font-hand text-[0.82rem] font-semibold text-ink-dim/90 bg-charcoal-warm/40 border border-pencil-light/50 rounded-lg px-2.5 py-1 transition-all duration-300 hover:text-accent hover:border-accent/40 cursor-default"
-                    style={{ transitionDelay: `${i * 20}ms` }}
-                  >
-                    {tag.name}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        ))}
+      {/* Split Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14 relative min-h-[50vh]">
+        
+        {/* Left Side: Scrollable List */}
+        <div className="flex flex-col gap-2 relative">
+           <div className="absolute top-0 bottom-0 left-[2.5rem] w-px bg-pencil-light/30 -z-10 hidden lg:block" />
+           {skills.map((skill, index) => (
+             <motion.button
+               key={skill.id}
+               onMouseEnter={() => setHoveredSkillId(skill.id)}
+               onFocus={() => setHoveredSkillId(skill.id)}
+               className={cn(
+                 "group flex items-center gap-6 py-5 px-4 rounded-xl transition-all duration-300 text-left outline-none border-2 border-transparent",
+                 "hover:bg-paper focus-visible:border-accent hover:shadow-[4px_4px_0_0_var(--color-pencil-light)]",
+                 activeSkill?.id === skill.id ? "opacity-100" : "opacity-50"
+               )}
+             >
+               <span className={cn(
+                 "font-mono text-sm font-bold w-6 hidden lg:block transition-colors duration-300",
+                 activeSkill?.id === skill.id ? "text-accent" : "text-ink-dim"
+               )}>
+                 {skill.id}
+               </span>
+               <div className="flex flex-col gap-1 w-full relative">
+                 <div className="flex justify-between items-center w-full">
+                    <h3 className={cn(
+                      "font-marker text-[1.4rem] md:text-[1.6rem] transition-colors duration-300 -tracking-wide truncate",
+                      activeSkill?.id === skill.id ? "text-accent" : "text-ink"
+                    )}>
+                      {skill.name}
+                    </h3>
+                 </div>
+                 
+                 {/* Mobile inline details */}
+                 <div className={cn(
+                   "lg:hidden grid transition-all duration-500 ease-in-out",
+                   activeSkill?.id === skill.id ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                 )}>
+                   <div className="overflow-hidden">
+                     <div className="pt-4">
+                       <p className="font-hand text-lg leading-relaxed text-ink-dim mb-4 line-clamp-3">
+                         {skill.description}
+                       </p>
+                       <div className="flex flex-wrap gap-2">
+                         {skill.tags.map((tag) => (
+                           <span key={tag.name} className="font-mono text-[0.65rem] font-bold tracking-widest text-ink-dim bg-charcoal-warm/30 border border-pencil-light/50 px-2 py-1 rounded flex items-center gap-1.5">
+                             {tag.name}
+                              <div className="flex gap-0.5 ml-1">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                  <div 
+                                    key={i} 
+                                    className={cn("w-[3px] h-[3px] rounded-full", i < Math.round(tag.level / 20) ? "bg-accent/60" : "bg-ink/10")}
+                                  />
+                                ))}
+                              </div>
+                           </span>
+                         ))}
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </motion.button>
+           ))}
+        </div>
+
+        {/* Right Side: Details Display */}
+        <div className="lg:sticky lg:top-32 self-start hidden lg:flex flex-col justify-center h-full">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSkill?.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-col gap-6 bg-paper-light border-2 border-pencil-light p-8 rounded-2xl shadow-[6px_6px_0_0_var(--color-pencil-light)]"
+            >
+               {activeSkill && (
+                 <>
+                   <div className="flex items-center gap-4 border-b-2 border-pencil-light/40 pb-5">
+                      <div className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 relative overflow-hidden shrink-0",
+                        "bg-accent border border-accent text-pencil-dark rotate-3"
+                      )}>
+                        <svg
+                          viewBox="0 0 36 36"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="3.2"
+                          strokeLinecap="round"
+                          className="w-5 h-5"
+                        >
+                           <path d={activeSkill.iconPath} />
+                        </svg>
+                      </div>
+                      <span className="font-hand font-bold text-[0.8rem] text-accent uppercase tracking-widest opacity-80">
+                        {activeSkill.specs}
+                      </span>
+                   </div>
+
+                   <p className="font-hand text-xl md:text-2xl leading-relaxed text-ink font-bold">
+                     {activeSkill.description}
+                   </p>
+
+                   <div className="flex flex-col gap-3 mt-4">
+                     {activeSkill.tags.map((tag, i) => (
+                       <div key={tag.name} className="flex flex-col gap-1.5">
+                         <div className="flex justify-between items-center">
+                           <span className="font-mono text-xs font-bold tracking-widest text-ink">{tag.name}</span>
+                           <span className="font-mono text-[0.6rem] text-ink-dim">{tag.level}%</span>
+                         </div>
+                         <div className="h-1.5 w-full bg-pencil-dark/20 rounded-full overflow-hidden">
+                           <motion.div 
+                             initial={{ width: 0 }}
+                             animate={{ width: `${tag.level}%` }}
+                             transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
+                             className="h-full bg-accent/80 rounded-full"
+                           />
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                 </>
+               )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </motion.section>
   );
 });
-
