@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Portfolio from './Portfolio';
 
-const Portfolio = React.lazy(() => import('./Portfolio'));
 const Dot8 = React.lazy(() => import('./dot-8/Dot8'));
 const AsciiGen = React.lazy(() => import('./ascii-gen/AsciiGen'));
 const Wallpapers = React.lazy(() => import('./wallpapers/Wallpapers'));

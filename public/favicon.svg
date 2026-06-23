@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 60">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&amp;display=swap');
+    .logo-text {
+      font-family: 'Permanent Marker', cursive, sans-serif;
+      font-size: 44px;
+      fill: #2d2a26;
+    }
+    .logo-dot {
+      fill: #FFB59D;
+    }
+  </style>
+  <text x="5" y="45" class="logo-text">Aayu<tspan class="logo-dot">.</tspan></text>
+</svg>

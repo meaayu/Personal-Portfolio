@@ -1,5 +1,5 @@
 import React, { useEffect, useState, memo } from "react";
-import { X, ArrowDown, Github, Instagram, Mail, PenTool } from "lucide-react";
+import { X, ArrowDown, Instagram, PenTool, Github, Linkedin, ExternalLink } from "lucide-react";
 import {
   motion,
   AnimatePresence,
@@ -135,8 +135,8 @@ export default memo(function Header() {
   }, []);
 
   const navLinks = [
-    { label: "Skills", id: "skills", num: "01" },
-    { label: "Work", id: "work", num: "02" },
+    { label: "Work", id: "work", num: "01" },
+    { label: "Skills", id: "skills", num: "02" },
     { label: "About", id: "about", num: "03" },
     { label: "Contact", id: "contact", num: "04" },
   ];
@@ -153,12 +153,11 @@ export default memo(function Header() {
           borderRadius: navRadius,
           backgroundColor: navBg,
           borderColor: navBorder,
-          backdropFilter: isScrolled ? "blur(12px)" : "none",
-          boxShadow: "none",
+          boxShadow: isScrolled ? "0 4px 20px rgba(0,0,0,0.05)" : "none",
           willChange: "top, width, padding, background-color, border-radius",
           maxWidth: 1100,
         }}
-        className="fixed inset-x-0 mx-auto z-[900] px-0 gpu border-2 border-solid flex items-center justify-center transition-shadow duration-300 hover:border-accent"
+        className="fixed inset-x-0 mx-auto z-[900] px-0 gpu border border-solid flex items-center justify-center transition-shadow duration-300 hover:border-accent/50"
       >
         <div className="w-full flex justify-between items-center px-6 md:px-10 relative group/nav">
           {/* Logo & Section Tracking */}
@@ -201,7 +200,7 @@ export default memo(function Header() {
                       "font-hand text-ink-dim no-underline text-[1.05rem] lg:text-[1.05rem] px-4 py-2.5 rounded-full transition-all duration-300 hover-instant relative tracking-[0.05em] capitalize flex items-center gap-3 group/link gpu",
                       activeSection === link.id
                         ? "text-accent"
-                        : "hover:text-ink",
+                        : "hover:text-accent",
                     )}
                   >
                     <span
@@ -213,11 +212,8 @@ export default memo(function Header() {
                     >
                       {link.num}
                     </span>
-                    <span className="relative z-10">{link.label}</span>
-
-                    {/* Hover Glow Effect */}
-                    <div className="absolute inset-0 bg-accent/0 group-hover/link:bg-accent/5 transition-colors -z-10" />
-
+                    <span className="relative z-10 transition-transform duration-300 group-hover/link:-translate-y-0.5 group-hover/link:scale-105 inline-block">{link.label}</span>
+                    
                     {/* Active Scribble Underline */}
                     {activeSection === link.id && (
                       <motion.svg
@@ -255,12 +251,14 @@ export default memo(function Header() {
                   </a>
                 </li>
               ))}
+
             </ul>
           </div>
 
           <div className="flex items-center justify-end gap-3 min-w-fit md:hidden">
             {/* Mobile Actions */}
             <div className="flex items-center gap-2">
+
               <motion.button
                 whileTap={{ scale: 0.92, y: 2 }}
                 className="w-11 h-11 bg-paper border-2 border-pencil-light/80 rounded-xl flex flex-col items-center justify-center gap-[4px] hover:border-accent hover:bg-accent/5 transition-all duration-200 cursor-pointer group/toggle shadow-[3px_3px_0px_0px_var(--color-pencil-light)] hover:shadow-[1px_1px_0px_0px_var(--color-pencil-light)] hover:translate-x-[2px] hover:translate-y-[2px]"
@@ -276,227 +274,145 @@ export default memo(function Header() {
         </div>
       </motion.nav>
 
-      {/* Mobile Nav Drawer */}
+      {/* Mobile Nav Overlay */}
       <AnimatePresence>
         {isMobileNavOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsMobileNavOpen(false)}
-              className="fixed inset-0 bg-black/95 z-[950]"
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 bg-[#0d0b11]/98 backdrop-blur-xl z-[1000] flex flex-col p-6 md:p-12 overscroll-contain justify-between"
+            style={{ transform: "translateZ(0)" }}
+          >
+            {/* Minimal Grid overlay */}
+            <div
+              className="absolute inset-0 opacity-[0.02] pointer-events-none z-0"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, var(--color-accent) 1px, transparent 1px), linear-gradient(to bottom, var(--color-accent) 1px, transparent 1px)",
+                backgroundSize: "40px 40px",
+              }}
             />
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 26, stiffness: 220 }}
-              className="fixed right-0 top-0 bottom-0 w-[88vw] max-w-[360px] bg-charcoal border-l border-accent/25 shadow-[0_0_50px_rgba(0,0,0,0.85)] z-[1000] flex flex-col overflow-y-auto overscroll-contain gpu"
-              style={{ transform: "translateZ(0)" }}
-            >
-              {/* Top Accent Line */}
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-linear-to-r from-transparent via-accent to-transparent opacity-60" />
 
-              {/* Faded Grid Background inside Side Panel */}
-              <div
-                className="absolute inset-0 opacity-[0.03] pointer-events-none z-0"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(to right, var(--color-accent) 1px, transparent 1px), linear-gradient(to bottom, var(--color-accent) 1px, transparent 1px)",
-                  backgroundSize: "20px 20px",
-                  maskImage:
-                    "radial-gradient(circle, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 80%)",
-                  WebkitMaskImage:
-                    "radial-gradient(circle, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 80%)",
+            {/* Header section inside overlay */}
+            <div className="flex justify-between items-center relative z-50">
+              <div className="flex items-center gap-2">
+                <span className="font-marker text-[1.8rem] text-ink leading-none tracking-wide">
+                  Aayu<span className="text-accent">.</span>
+                </span>
+                <span className="font-mono text-[0.62rem] text-accent/60 tracking-[0.2em] uppercase pt-1">
+                  // Portfolio
+                </span>
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsMobileNavOpen(false)}
+                className="w-12 h-12 flex items-center justify-center rounded-full bg-paper/30 border border-pencil-light/20 text-ink-dim hover:text-accent hover:bg-paper/60 hover:rotate-90 transition-all duration-300 cursor-pointer"
+                aria-label="Close menu"
+              >
+                <X size={20} strokeWidth={2} />
+              </motion.button>
+            </div>
+
+            {/* Centered Large Typographic Links */}
+            <div className="flex-1 flex flex-col justify-center items-center py-8 relative z-10">
+              <motion.nav
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: {
+                    opacity: 1,
+                    transition: {
+                      staggerChildren: 0.1,
+                      delayChildren: 0.1,
+                    }
+                  }
                 }}
-              />
-
-              {/* Header inside Panel */}
-              <div className="p-7 pb-3 flex justify-between items-center relative z-50 mt-1">
-                <div className="flex flex-col">
-                  <span className="font-marker text-[1.6rem] text-ink leading-none">
-                    Aayu<span className="text-accent">.</span>
-                  </span>
-                  <span className="font-mono text-[0.55rem] text-accent font-bold tracking-[0.3em] pl-0.5 leading-none mt-1.5 opacity-80 uppercase">
-                    index_folio
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => setIsMobileNavOpen(false)}
-                    className="w-10 h-10 bg-paper/80 border-2 border-pencil-light/60 rounded-xl flex items-center justify-center text-ink-dim hover:text-accent hover:border-accent hover:rotate-90 transition-all duration-300 shadow-sm active:scale-90 cursor-pointer"
-                  >
-                    <X size={18} strokeWidth={2.5} />
-                  </motion.button>
-                </div>
-              </div>
-
-              {/* Sketched Horizon Divider */}
-              <div className="px-7 py-3 opacity-25 relative z-10 select-none pointer-events-none">
-                <svg
-                  className="w-full h-[10px] overflow-visible text-accent stroke-current"
-                  viewBox="0 0 280 10"
-                  fill="none"
-                >
-                  <path
-                    d="M2 5 Q70 -1, 140 5 T 278 5"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                  />
-                  <circle
-                    cx="10"
-                    cy="5"
-                    r="2.5"
-                    className="fill-accent stroke-none"
-                  />
-                  <circle
-                    cx="270"
-                    cy="5"
-                    r="2.5"
-                    className="fill-accent stroke-none"
-                  />
-                </svg>
-              </div>
-
-              {/* Links List Navigation */}
-              <nav className="flex-1 flex flex-col gap-2.5 px-5 py-4 relative z-10 mt-1 select-none">
-                {navLinks.map((link) => {
-                  // Generates custom handwritten explanations
-                  const descriptions: Record<string, string> = {
-                    skills: "capabilities & gears",
-                    work: "case studies & craft",
-                    about: "philosophy & story",
-                    contact: "say hello or collaborate",
-                  };
+                initial="hidden"
+                animate="show"
+                className="flex flex-col gap-6 md:gap-8 text-center"
+              >
+                {navLinks.map((link, idx) => {
                   const active = activeSection === link.id;
-
                   return (
-                    <a
+                    <motion.div
                       key={link.id}
-                      href={`#${link.id}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setIsMobileNavOpen(false);
-                        setTimeout(() => smoothScrollTo(link.id), 300);
+                      variants={{
+                        hidden: { opacity: 0, y: 30 },
+                        show: { 
+                          opacity: 1, 
+                          y: 0,
+                          transition: { type: "spring", stiffness: 180, damping: 18 }
+                        }
                       }}
-                      className={cn(
-                        "flex items-center gap-5 p-4 rounded-2xl border border-transparent transition-all duration-300 relative group active:scale-[0.98]",
-                      )}
+                      className="relative block"
                     >
-                      {/* Interactive Active Highlight: Looks like hand-made craft sticker card */}
-                      {active && (
-                        <motion.div
-                          layoutId="mobile-nav-active"
-                          className="absolute inset-0 bg-paper/70 border-2 border-dashed border-accent/25 rounded-2xl shadow-[3px_3px_0_var(--color-pencil-light)] -z-10"
-                          transition={{
-                            type: "spring",
-                            stiffness: 350,
-                            damping: 25,
-                          }}
-                        />
-                      )}
-
-                      {/* Number Index Block */}
-                      <span
-                        className={cn(
-                          "text-[0.62rem] font-mono w-9 h-9 flex items-center justify-center border rounded-lg tracking-widest transition-all duration-300 shrink-0",
-                          active
-                            ? "bg-accent/10 border-accent/30 text-accent font-semibold"
-                            : "bg-paper/40 border-pencil-light/60 text-ink-dim/70 group-hover:border-accent/20 group-hover:text-amber-500",
-                        )}
+                      <a
+                        href={`#${link.id}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setIsMobileNavOpen(false);
+                          setTimeout(() => smoothScrollTo(link.id), 250);
+                        }}
+                        className="group inline-flex items-baseline gap-4 focus:outline-none"
                       >
-                        {link.num}
-                      </span>
+                        {/* Bullet / Number */}
+                        <span className="font-mono text-[0.8rem] text-accent font-semibold tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">
+                          {link.num}
+                        </span>
 
-                      {/* Text Column */}
-                      <div className="flex-grow flex flex-col items-start text-left">
+                        {/* Title font */}
                         <span
                           className={cn(
-                            "font-hand text-[1.2rem] tracking-wider capitalize transition-colors duration-300 leading-tight",
+                            "font-marker text-[2.6rem] sm:text-[3.2rem] tracking-wide transition-all duration-300 relative",
                             active
-                              ? "text-accent"
-                              : "text-ink group-hover:text-accent",
+                              ? "text-accent scale-105"
+                              : "text-ink/80 hover:text-accent hover:translate-x-1"
                           )}
                         >
                           {link.label}
+                          
+                          {/* Sleek Underline Indicator */}
+                          <span className={cn(
+                            "absolute left-0 right-0 bottom-1 h-[2px] bg-accent/60 transform origin-left transition-transform duration-300",
+                            active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                          )} />
                         </span>
-                        <span className="font-hand text-[0.85rem] text-ink-dim/60 italic leading-none mt-1 group-hover:text-accent/60 transition-colors">
-                          {descriptions[link.id]}
-                        </span>
-                      </div>
-
-                      {/* Right Indicator Key */}
-                      <div
-                        className={cn(
-                          "w-7 h-7 rounded-lg border border-pencil-light/30 flex items-center justify-center opacity-0 transition-all duration-300 shrink-0",
-                          active
-                            ? "opacity-100 bg-accent/5 border-accent/30"
-                            : "group-hover:opacity-40",
-                        )}
-                      >
-                        <ArrowDown
-                          size={12}
-                          className={cn(
-                            "transition-transform duration-300",
-                            active
-                              ? "-rotate-90 translate-x-0.5 text-accent"
-                              : "-rotate-95 group-hover:-rotate-90",
-                          )}
-                        />
-                      </div>
-                    </a>
+                      </a>
+                    </motion.div>
                   );
                 })}
-              </nav>
+              </motion.nav>
+            </div>
 
-              <div className="p-7 border-t-2 border-dashed border-pencil-light/30 flex flex-col gap-6 mt-auto relative z-10 bg-charcoal">
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-2.5 items-center">
-                    {[
-                      {
-                        icon: Instagram,
-                        url: "https://instagram.com/m__aayu__",
-                        label: "IG",
-                      },
-                      {
-                        icon: Github,
-                        url: "https://github.com/meaayu",
-                        label: "GH",
-                      },
-                      {
-                        icon: Mail,
-                        url: "mailto:itsaayush.m@gmail.com",
-                        label: "Mail",
-                      },
-                    ].map((social) => (
-                      <a
-                        key={social.label}
-                        href={social.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-9 h-9 rounded-lg bg-paper border-2 border-pencil-light/60 flex items-center justify-center text-ink-dim hover:text-accent hover:border-accent transition-all cursor-pointer rotate-1 hover:rotate-0 active:scale-90 shadow-sm active:shadow-none"
-                      >
-                        <social.icon size={15} />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex justify-end items-end">
-                  <div className="text-right flex flex-col gap-1">
-                    <span className="font-mono text-[0.5rem] text-ink-dim/40 uppercase tracking-[0.4em] mb-0.5">
-                      EST // 2026 // NEPAL
-                    </span>
-                    <span className="font-hand text-[0.82rem] text-accent/80 italic leading-none">
-                      Handmade with soul
-                    </span>
-                  </div>
-                </div>
+            {/* Bottom Minimal Layout */}
+            <div className="border-t border-pencil-light/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 relative z-50 text-ink-dim/60">
+              <div className="flex items-center gap-6">
+                {[
+                  { icon: Github, url: "https://github.com", label: "Github" },
+                  { icon: Instagram, url: "https://instagram.com/m__aayu__", label: "Instagram" },
+                  { icon: Linkedin, url: "https://linkedin.com", label: "Linkedin" }
+                ].map((social) => (
+                  <a
+                    key={social.label}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 font-sans text-xs tracking-wider font-semibold hover:text-accent transition-colors"
+                  >
+                    <social.icon size={14} />
+                    <span className="hidden sm:inline">{social.label}</span>
+                  </a>
+                ))}
               </div>
-            </motion.div>
-          </>
+
+              <div className="flex items-center gap-2 font-mono text-[0.68rem] tracking-widest uppercase">
+                <span>KTM, NEPAL</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 opacity-75 animate-pulse" />
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 

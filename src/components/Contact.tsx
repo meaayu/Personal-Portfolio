@@ -46,7 +46,14 @@ export default memo(function Contact() {
   };
 
   return (
-    <section id="contact" className="pt-24 pb-16 max-w-[1100px] mx-auto px-6 md:px-10">
+    <motion.section 
+      id="contact" 
+      className="pt-24 pb-16 max-w-[1100px] mx-auto px-6 md:px-10"
+      initial={{ opacity: 0, filter: "blur(14px)", y: 45 }}
+      whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+      viewport={{ once: false, margin: "-120px" }}
+      transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+    >
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -220,6 +227,6 @@ export default memo(function Contact() {
 
         </motion.form>
       </div>
-    </section>
+    </motion.section>
   );
 });

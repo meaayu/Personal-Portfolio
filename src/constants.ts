@@ -1,10 +1,10 @@
 import { ProjectData } from './types';
-import portfolioImg from './assets/project/portfolio.png';
-import dot8Img from './assets/project/Dot-8.png';
-import practice1 from './assets/project/practice1.jpg';
-import practice2 from './assets/project/practice2.jpg';
-import practice3 from './assets/project/practice3.jpg';
-import practice4 from './assets/project/practice4.jpg';
+import portfolioImg from './wallpapers/assets/assets/project/portfolio.png';
+import dot8Img from './wallpapers/assets/assets/project/Dot-8.png';
+import practice1 from './wallpapers/assets/assets/project/practice1.jpg';
+import practice2 from './wallpapers/assets/assets/project/practice2.jpg';
+import practice3 from './wallpapers/assets/assets/project/practice3.jpg';
+import practice4 from './wallpapers/assets/assets/project/practice4.jpg';
 
 export const PROJECTS: ProjectData[] = [
   {
@@ -89,7 +89,7 @@ export const PROJECTS: ProjectData[] = [
     panelType: 'ASCII Utility',
     desc: 'An image filter tool that converts your photos into stylized ASCII art.',
     tags: ['React', 'Canvas API'],
-    images: [],
+    images: ['/ascii-gen.png'],
     link: '/ascii-gen',
     linkText: 'INITIALIZE ENGINE ↗',
     views: 890,

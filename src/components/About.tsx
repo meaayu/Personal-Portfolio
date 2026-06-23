@@ -1,6 +1,6 @@
 import { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 const OBSESSIONS = [
   {
@@ -42,10 +42,10 @@ export default memo(function About() {
     <motion.section 
       id="about" 
       className="py-28 md:py-36 max-w-[1100px] mx-auto px-6 md:px-12 relative isolate text-left"
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8, ease: [0.215, 0.610, 0.355, 1.000] }}
+      initial={{ opacity: 0, filter: "blur(14px)", y: 45 }}
+      whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+      viewport={{ once: false, margin: "-120px" }}
+      transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
     >
       
       {/* Blueprint background grid lines for a subtle design touch */}
@@ -55,15 +55,10 @@ export default memo(function About() {
         
         {/* Left Column: Cozy, airy, minimal presentation text */}
         <div className="flex flex-col justify-center gap-6 lg:max-w-[420px]">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="flex items-center gap-3 mb-1"
-          >
+          <div className="flex items-center gap-3 mb-1">
             <span className="font-sans text-xs font-bold tracking-[0.2em] text-accent uppercase">03 / Profile</span>
             <span className="w-1.5 h-1.5 rounded-full bg-accent/30" />
-          </motion.div>
+          </div>
 
           <h2 className="font-marker text-[clamp(2.1rem,4.5vw,2.8rem)] text-ink leading-tight -tracking-tight">
             The Artisan Philosophy

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 
 interface LoaderProps {
@@ -6,173 +6,108 @@ interface LoaderProps {
 }
 
 export default function Loader({ onComplete }: LoaderProps) {
-  useEffect(() => {
-    // Elegant, curated speed that finishes drawing, displays perfectly, then gracefully fades out
-    const timer = setTimeout(() => {
-      onComplete();
-    }, 3100);
+  const [progress, setProgress] = useState(0);
 
-    return () => clearTimeout(timer);
+  useEffect(() => {
+    const totalDuration = 4000; // Hold strict 4000ms (4s) before entering
+    const progressDuration = 3500; // Reach 100% at 3.5s allowing 0.5s hold at 100%
+    const startTime = Date.now();
+
+    const updateProgress = () => {
+      const elapsed = Date.now() - startTime;
+      const ratio = Math.min(1, elapsed / progressDuration);
+      
+      // Smooth cinematic ease matching the progress curve
+      const easeRatio = ratio === 1 ? 1 : 1 - Math.pow(2, -10 * ratio);
+      setProgress(Math.floor(easeRatio * 100));
+
+      if (elapsed < totalDuration) {
+        requestAnimationFrame(updateProgress);
+      } else {
+        onComplete();
+      }
+    };
+
+    const animFrame = requestAnimationFrame(updateProgress);
+    return () => cancelAnimationFrame(animFrame);
   }, [onComplete]);
 
-  // Letters of the logo "Aayu"
-  const letters = ["A", "a", "y", "u"];
-
-  const containerVariants: any = {
+  // Typography stagger animations
+  const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.15
-      }
+      transition: { staggerChildren: 0.15, delayChildren: 0.2 }
     }
-  };
+  } as const;
 
-  const letterVariants: any = {
-    hidden: {
-      opacity: 0,
-      scale: 0.65,
-      y: 28
-    },
-    visible: {
-      opacity: 1,
+  const letterVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
       scale: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 260,
-        damping: 14,
-        mass: 0.65
-      }
+      transition: { type: "spring", stiffness: 220, mass: 0.8, damping: 14 }
     }
-  };
-
-  const underlineVariants: any = {
-    hidden: { pathLength: 0, opacity: 0, scale: 0.95 },
-    visible: {
-      pathLength: 1,
-      opacity: 0.9,
-      scale: 1,
-      transition: {
-        delay: 0.85,
-        duration: 1.1,
-        ease: [0.25, 1, 0.5, 1]
-      }
-    }
-  };
+  } as const;
 
   return (
     <motion.div
+      id="minimal-loader"
       initial={{ opacity: 1 }}
-      exit={{ 
-        opacity: 0,
-        scale: 0.98,
-        transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } 
-      }}
-      className="fixed inset-0 w-screen h-[100dvh] z-[9999] flex flex-col items-center justify-center select-none transform-gpu overflow-hidden"
-      style={{ 
-        backgroundColor: 'var(--color-charcoal)',
-        willChange: 'opacity, transform'
-      }}
+      exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.7, ease: [0.2, 1, 0.3, 1] } }}
+      className="fixed inset-0 w-screen h-[100dvh] z-[9999] flex flex-col items-center justify-center select-none bg-charcoal overflow-hidden transform-gpu"
     >
-      {/* Blueprint grid layout backdrop with GPU caching */}
-      <div 
-        className="absolute inset-x-0 inset-y-0 opacity-[0.045] pointer-events-none transform-gpu"
-        style={{ 
-          backgroundImage: 'linear-gradient(to right, var(--color-accent) 1px, transparent 1px), linear-gradient(to bottom, var(--color-accent) 1px, transparent 1px)', 
-          backgroundSize: '24px 24px',
-          maskImage: 'radial-gradient(circle, rgba(0,0,0,1) 15%, rgba(0,0,0,0) 80%)',
-          WebkitMaskImage: 'radial-gradient(circle, rgba(0,0,0,1) 15%, rgba(0,0,0,0) 80%)',
-          willChange: 'mask-image'
-        }} 
-      />
-
-      {/* Main Centered Typographic Logo Area */}
-      <div className="relative flex flex-col items-center justify-center transform-gpu">
+      <div className="flex flex-col items-center justify-center gap-14 w-full max-w-sm px-6">
         
-        {/* Brand Name Typography Container with active GPU acceleration layers */}
+        {/* Minimalist Brand Typography */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="relative flex items-baseline justify-center mb-1 z-10 transform-gpu"
+          className="flex items-baseline justify-center tracking-tight"
         >
-          {letters.map((char, index) => (
-            <motion.span
-              key={index}
-              variants={letterVariants}
-              className="font-marker text-[3.5rem] sm:text-[4.5rem] md:text-[5.5rem] lg:text-[6.5rem] tracking-tight text-ink inline-block origin-bottom leading-none transform-gpu"
-              style={{ willChange: 'transform, opacity' }}
+          {["a", "a", "y", "u"].map((char, index) => (
+            <motion.span 
+              key={index} 
+              variants={letterVariants} 
+              className="font-marker text-[4.5rem] sm:text-[5.5rem] md:text-[6.5rem] text-ink leading-none px-0.5 lowercase origin-bottom"
             >
               {char}
             </motion.span>
           ))}
-          
-          {/* Distinctive Orange Accent dot drawing itself organically/stretching, pulsing soft shockwaves */}
-          <div className="relative w-[12px] h-[12px] sm:w-[15px] sm:h-[15px] md:w-[19px] md:h-[19px] lg:w-[22px] lg:h-[22px] self-end mb-1 sm:mb-1.5 ml-1 sm:ml-1.5 overflow-visible transform-gpu">
-            <svg viewBox="0 0 12 12" className="w-full h-full text-accent" fill="none" strokeWidth="1.6" style={{ willChange: 'transform, opacity' }}>
-              {/* Outer soft dynamic expand/ripple */}
-              <motion.circle
-                cx="6"
-                cy="6"
-                r="4.5"
-                stroke="currentColor"
-                strokeWidth="1"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{
-                  scale: [0.2, 2.2],
-                  opacity: [0, 0.75, 0],
-                }}
-                transition={{
-                  delay: 1.15,
-                  duration: 1.2,
-                  ease: "easeOut",
-                  repeat: Infinity,
-                  repeatDelay: 0.8
-                }}
-              />
-              {/* Internal solid drawing core */}
-              <motion.circle
-                cx="6"
-                cy="6"
-                r="3.5"
-                stroke="currentColor"
-                fill="currentColor"
-                variants={{
-                  hidden: { 
-                    scale: 0,
-                    opacity: 0,
-                    rotate: -45
-                  },
-                  visible: {
-                    scale: 1,
-                    opacity: 1,
-                    rotate: 0,
-                    transition: {
-                      scale: { delay: 0.8, type: "spring", stiffness: 240, damping: 11, mass: 0.85 },
-                      opacity: { delay: 0.8, duration: 0.3 }
-                    }
-                  }
-                }}
-                initial="hidden"
-                animate="visible"
-              />
-            </svg>
+          <motion.span 
+            initial={{ scale: 0, rotate: -30 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.85, type: "spring", stiffness: 240, damping: 12 }}
+            className="text-accent text-[4.5rem] sm:text-[5.5rem] md:text-[6.5rem] font-sans inline-block origin-bottom leading-none select-none pl-1"
+          >
+            .
+          </motion.span>
+        </motion.div>
+
+        {/* Minimalist Loading Progress UI */}
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.6, ease: "easeOut" }}
+          className="w-full max-w-[200px] flex flex-col gap-4"
+        >
+          {/* Progress Indicators */}
+          <div className="flex justify-between items-end w-full font-mono text-[9px] sm:text-[10px] tracking-[0.2em] text-ink-dim/50 uppercase">
+            <span>Loading</span>
+            <span className="tabular-nums font-bold text-accent/90">{String(progress).padStart(3, '0')}%</span>
+          </div>
+
+          {/* Core Loading Line */}
+          <div className="h-[2px] w-full bg-pencil-dark/15 relative overflow-hidden rounded-full">
+            <div 
+              className="h-full bg-accent relative rounded-full will-change-[width]"
+              style={{ width: `${progress}%` }}
+            />
           </div>
         </motion.div>
 
-        {/* Hand-drawn underline effect drawing itself underneath the text */}
-        <div className="w-[120px] sm:w-[150px] md:w-[180px] lg:w-[210px] h-2 sm:h-3 relative overflow-visible mb-1 z-10 transform-gpu">
-          <svg viewBox="0 0 100 10" className="w-full h-full text-accent stroke-current" fill="none" strokeWidth="2.5" strokeLinecap="round" style={{ willChange: 'transform' }}>
-            <motion.path 
-              d="M 5,3 C 35,6 65,1 95,5" 
-              variants={underlineVariants}
-              initial="hidden"
-              animate="visible"
-            />
-          </svg>
-        </div>
       </div>
     </motion.div>
   );

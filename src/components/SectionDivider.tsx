@@ -16,14 +16,67 @@ export default function SectionDivider({ className, type = 'wave' }: SectionDivi
   const renderPath = () => {
     switch(type) {
       case 'zigzag':
-        return <path d="M0,10 L15,2 L35,18 L50,8 L70,18 L85,4 L105,16 L120,6 L140,18 L155,5 L175,17 L190,8 L200,10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />;
+        return (
+          <motion.path 
+            d="M0,10 L15,2 L35,18 L50,8 L70,18 L85,4 L105,16 L120,6 L140,18 L155,5 L175,17 L190,8 L200,10" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            fill="none" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            initial={{ pathLength: 0 }}
+            whileInView={{ pathLength: 1 }}
+            viewport={{ once: true, margin: "-30px" }}
+            transition={{ duration: 1.4, ease: "easeInOut" }}
+          />
+        );
       case 'scribble':
-        return <path d="M0,10 C 20,25 30,-5 50,10 C 70,25 80,-5 100,10 C 120,25 130,-5 150,10 C 170,25 180,-5 200,10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />;
+        return (
+          <motion.path 
+            d="M0,10 C 20,25 30,-5 50,10 C 70,25 80,-5 100,10 C 120,25 130,-5 150,10 C 170,25 180,-5 200,10" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            fill="none" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            initial={{ pathLength: 0 }}
+            whileInView={{ pathLength: 1 }}
+            viewport={{ once: true, margin: "-30px" }}
+            transition={{ duration: 1.6, ease: "easeInOut" }}
+          />
+        );
       case 'dashed':
-        return <path d="M0,10 L200,10" stroke="currentColor" strokeWidth="2.5" strokeDasharray="8 12" fill="none" strokeLinecap="round" className="transform -rotate-1 origin-center" />;
+        return (
+          <motion.path 
+            d="M0,10 L200,10" 
+            stroke="currentColor" 
+            strokeWidth="2.5" 
+            strokeDasharray="8 12" 
+            fill="none" 
+            strokeLinecap="round" 
+            className="transform -rotate-1 origin-center" 
+            initial={{ pathLength: 0 }}
+            whileInView={{ pathLength: 1 }}
+            viewport={{ once: true, margin: "-30px" }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+          />
+        );
       case 'wave':
       default:
-        return <path d="M0,10 Q 15,-2 30,10 T 60,10 T 90,10 T 120,10 T 150,10 T 180,10 T 200,10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />;
+        return (
+          <motion.path 
+            d="M0,10 Q 15,-2 30,10 T 60,10 T 90,10 T 120,10 T 150,10 T 180,10 T 200,10" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            fill="none" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            initial={{ pathLength: 0 }}
+            whileInView={{ pathLength: 1 }}
+            viewport={{ once: true, margin: "-30px" }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+          />
+        );
     }
   };
 

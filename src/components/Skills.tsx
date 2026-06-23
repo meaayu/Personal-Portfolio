@@ -79,43 +79,70 @@ export default memo(function Skills() {
     return skills[0];
   }, [hoveredSkillId]);
 
+  const listVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      }
+    }
+  } as const;
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -16, y: 8 },
+    show: { 
+      opacity: 1, 
+      x: 0, 
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 130,
+        damping: 15
+      }
+    }
+  } as const;
+
   return (
     <motion.section 
       id="skills" 
       className="pt-24 pb-20 max-w-[1100px] mx-auto px-5 md:px-10 relative isolate"
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8 }}
+      initial={{ opacity: 0, filter: "blur(14px)", y: 45 }}
+      whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+      viewport={{ once: false, margin: "-120px" }}
+      transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 md:gap-10 mb-12 md:mb-16 border-b border-pencil-light/30 pb-8">
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="relative"
-        >
+        <div className="relative">
            <div className="flex items-center gap-3 mb-2">
               <div className="h-[1px] w-10 bg-accent/30" />
               <span className="font-hand text-[0.85rem] tracking-[0.3em] font-bold text-accent uppercase opacity-90">02 Toolkit</span>
            </div>
            <h2 className="font-marker text-[clamp(2.1rem,4.5vw,3.2rem)] text-ink leading-none -tracking-tight">Core Skills</h2>
-        </motion.div>
+        </div>
       </div>
  
       {/* Split Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14 relative min-h-[50vh]">
         
-        {/* Left Side: Scrollable List */}
-        <div className="flex flex-col gap-2 relative">
+        {/* Left Side: Scrollable List with Motion to enable staggered fade-in */}
+        <motion.div 
+          variants={listVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: false, margin: "-120px" }}
+          className="flex flex-col gap-2 relative"
+        >
            <div className="absolute top-0 bottom-0 left-[2.5rem] w-px bg-pencil-light/30 -z-10 hidden lg:block" />
            {skills.map((skill, index) => (
              <motion.button
                key={skill.id}
+               variants={itemVariants}
                onMouseEnter={() => setHoveredSkillId(skill.id)}
                onFocus={() => setHoveredSkillId(skill.id)}
+               whileHover={{ x: 6, transition: { duration: 0.2 } }}
                className={cn(
-                 "group flex items-center gap-6 py-5 px-4 rounded-xl transition-all duration-300 text-left outline-none border-2 border-transparent",
+                 "group flex items-center gap-4 md:gap-6 py-3 md:py-5 px-4 rounded-xl transition-all duration-300 text-left outline-none border-2 border-transparent",
                  "hover:bg-paper focus-visible:border-accent hover:shadow-[4px_4px_0_0_var(--color-pencil-light)]",
                  activeSkill?.id === skill.id ? "opacity-100" : "opacity-50"
                )}
@@ -129,7 +156,7 @@ export default memo(function Skills() {
                <div className="flex flex-col gap-1 w-full relative">
                  <div className="flex justify-between items-center w-full">
                     <h3 className={cn(
-                      "font-marker text-[1.4rem] md:text-[1.6rem] transition-colors duration-300 -tracking-wide truncate",
+                      "font-marker text-[1.2rem] md:text-[1.6rem] transition-colors duration-300 -tracking-wide truncate",
                       activeSkill?.id === skill.id ? "text-accent" : "text-ink"
                     )}>
                       {skill.name}
@@ -142,22 +169,14 @@ export default memo(function Skills() {
                    activeSkill?.id === skill.id ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
                  )}>
                    <div className="overflow-hidden">
-                     <div className="pt-4">
-                       <p className="font-hand text-lg leading-relaxed text-ink-dim mb-4 line-clamp-3">
+                     <div className="pt-2">
+                       <p className="font-hand text-base md:text-lg leading-relaxed text-ink-dim mb-2 line-clamp-2">
                          {skill.description}
                        </p>
-                       <div className="flex flex-wrap gap-2">
+                       <div className="flex flex-wrap gap-1.5">
                          {skill.tags.map((tag) => (
-                           <span key={tag.name} className="font-mono text-[0.65rem] font-bold tracking-widest text-ink-dim bg-charcoal-warm/30 border border-pencil-light/50 px-2 py-1 rounded flex items-center gap-1.5">
+                           <span key={tag.name} className="font-mono text-[0.6rem] font-bold tracking-widest text-ink-dim bg-charcoal-warm/30 border border-pencil-light/50 px-2 py-1 rounded flex items-center gap-1.5">
                              {tag.name}
-                              <div className="flex gap-0.5 ml-1">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                  <div 
-                                    key={i} 
-                                    className={cn("w-[3px] h-[3px] rounded-full", i < Math.round(tag.level / 20) ? "bg-accent/60" : "bg-ink/10")}
-                                  />
-                                ))}
-                              </div>
                            </span>
                          ))}
                        </div>
@@ -167,7 +186,7 @@ export default memo(function Skills() {
                </div>
              </motion.button>
            ))}
-        </div>
+        </motion.div>
 
         {/* Right Side: Details Display */}
         <div className="lg:sticky lg:top-32 self-start hidden lg:flex flex-col justify-center h-full">

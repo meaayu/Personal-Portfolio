@@ -1,16 +1,13 @@
 import React, { useState, Suspense, lazy, useEffect } from 'react';
-import { AnimatePresence } from 'motion/react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import SectionDivider from './components/SectionDivider';
-import Loader from './components/Loader';
 import Footer from './components/Footer';
 import Contact from './components/Contact';
 import SocialSidebar from './components/SocialSidebar';
 import { PROJECTS as ALL_PROJECTS } from './constants';
 import { ProjectData } from './types';
 import { useLockBodyScroll } from './hooks/useLockBodyScroll';
-import ChatWidget from './components/ChatWidget';
 import ProjectModal from './components/ProjectModal';
 import './index.css';
 
@@ -30,39 +27,25 @@ export interface AppSettings {
 
 export default function Portfolio() {
   const [activeProject, setActiveProject] = useState<ProjectData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [appSettings] = useState<AppSettings>({
+    chatBotEnabled: false,
+    performanceModeDefault: false,
+    maintenanceMode: false,
+    liveStatus: "",
+    accentColor: "#D0BCFF",
+    avatarUrl: "",
+    hiddenProjects: []
+  });
 
-  useEffect(() => {
-    fetch('/api/settings')
-      .then(async res => {
-        const text = await res.text();
-        try {
-          return JSON.parse(text);
-        } catch (e) {
-          console.error("Settings API returned non-JSON:", text.substring(0, 100));
-          return null;
-        }
-      })
-      .then(data => {
-        if (!data) return;
-        setAppSettings(data);
-        if (data.performanceModeDefault) {
-          localStorage.setItem('performanceMode', 'true');
-          window.dispatchEvent(new Event('storage'));
-        }
-      })
-      .catch(e => console.error("Failed to load settings:", e));
-  }, []);
-
-  useLockBodyScroll(!!activeProject || (isLoading && !appSettings?.maintenanceMode));
+  useLockBodyScroll(isLoading && !appSettings?.maintenanceMode);
 
   const visibleProjects = ALL_PROJECTS.filter(p => !appSettings?.hiddenProjects.includes(p.id));
 
   if (appSettings?.maintenanceMode) {
     return (
       <div className="min-h-screen bg-charcoal text-ink flex flex-col items-center justify-center p-4">
-        <style>{`:root { --color-accent: ${appSettings?.accentColor || '#FFB59D'}; }`}</style>
+        <style>{`:root { --color-accent: ${appSettings?.accentColor || '#D0BCFF'}; }`}</style>
         <div className="max-w-md text-center space-y-6">
           <div className="w-24 h-24 mx-auto border-2 border-dashed border-accent/50 rounded-full flex items-center justify-center bg-accent/5">
             <span className="text-4xl">🚧</span>
@@ -79,11 +62,6 @@ export default function Portfolio() {
 
   return (
     <>
-      <style>{`:root { --color-accent: ${appSettings?.accentColor || '#FFB59D'}; }`}</style>
-      <AnimatePresence>
-        {isLoading && <Loader onComplete={() => setIsLoading(false)} />}
-      </AnimatePresence>
-      
       <div className="relative min-h-screen text-ink selection:bg-accent/30 selection:text-ink">
         <Header />
         
@@ -94,9 +72,6 @@ export default function Portfolio() {
           <SectionDivider type="wave" />
           
           <Suspense fallback={<div className="h-[50vh] flex items-center justify-center"><div className="w-8 h-8 rounded-full border-2 border-accent border-t-transparent animate-spin" /></div>}>
-            <Skills />
-            <SectionDivider type="wave" className="rotate-180" />
-            
             <Projects 
               projects={visibleProjects}
               onOpenProject={(id) => {
@@ -104,6 +79,9 @@ export default function Portfolio() {
                 if (p) setActiveProject(p);
               }} 
             />
+            <SectionDivider type="wave" className="rotate-180" />
+            
+            <Skills />
             <SectionDivider type="wave" />
             
             <About />
@@ -114,7 +92,6 @@ export default function Portfolio() {
         </main>
         
         <Footer />
-        {(!appSettings || appSettings.chatBotEnabled) && <ChatWidget />}
       </div>
 
       <ProjectModal 

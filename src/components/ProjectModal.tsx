@@ -5,6 +5,12 @@ import { cn, throttle } from '../lib/utils';
 import { motion, AnimatePresence, useScroll, useSpring, useTransform, useDragControls } from 'motion/react';
 import { usePerformanceMode } from '../hooks/usePerformanceMode';
 import { Link } from 'react-router-dom';
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll';
+
+function ScrollLock() {
+  useLockBodyScroll(true);
+  return null;
+}
 
 interface ProjectModalProps {
   project: ProjectData | null;
@@ -119,11 +125,12 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
     <AnimatePresence>
       {project && (
         <motion.div 
-          exit={{ opacity: 1, transition: { duration: 0.4 } }}
+          exit={{ opacity: 0, transition: { delay: 0.3, duration: 0.3 } }}
           className={cn(
           "fixed inset-0 z-[1000] flex overflow-hidden",
           isMobile ? "items-end" : "justify-end"
         )}>
+          <ScrollLock />
           {/* Isolation Layer - Darkened backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -158,8 +165,8 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
               }
             }}
             className={cn(
-              "relative flex flex-col z-10 bg-paper overflow-hidden gpu will-change-transform",
-              isMobile ? "w-full h-[92vh] rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.4)] border-t border-pencil-light/30" : "h-full w-[min(680px,80vw)] border-l-2 border-pencil-light/65 shadow-[-15px_0_45px_rgba(0,0,0,0.35)]"
+              "relative flex flex-col z-10 bg-paper/95 backdrop-blur-xl overflow-hidden gpu will-change-transform",
+              isMobile ? "w-full h-[92vh] rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)]" : "h-full w-[min(720px,85vw)] rounded-l-[2.5rem] shadow-[-20px_0_60px_rgba(0,0,0,0.15)]"
             )}
           >
             {/* Visual HUD & Blueprint Texture */}
@@ -177,45 +184,35 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
 
             {/* Tactical Status Bar */}
             <header className={cn(
-              "h-16 md:h-24 flex items-center justify-between px-5 md:px-12 shrink-0 z-50 transition-all duration-300 relative gpu",
-              isScrolled ? "bg-paper/95 backdrop-blur-sm border-b border-pencil-light/35 shadow-sm" : "bg-transparent",
-              isMobile && !isScrolled && "mt-1"
+              "h-20 md:h-28 flex items-center justify-between px-6 md:px-12 shrink-0 z-50 transition-all duration-300 relative gpu",
+              isScrolled ? "bg-paper/80 backdrop-blur-md border-b border-pencil-light/20 shadow-sm" : "bg-transparent",
+              isMobile && !isScrolled && "mt-2"
             )}>
               <div className="flex items-center gap-4 md:gap-8">
                 <div className="flex items-center gap-6 md:gap-8">
-                  <div className="h-10 md:h-12 w-[2px] bg-gradient-to-b from-accent/50 to-transparent rotate-12 hidden md:block" />
                   <div className="flex flex-col">
-                    <span className="font-mono text-[0.68rem] text-accent font-semibold tracking-wider uppercase select-none">
+                    <span className="font-mono text-[0.65rem] text-ink-dim/60 font-semibold tracking-widest uppercase select-none mb-1">
                       Project 0{projectIndex + 1}
                     </span>
-                    <h3 className="font-marker text-[1.4rem] md:text-[1.80rem] text-ink leading-none mt-1 uppercase select-none tracking-tight">
+                    <h3 className="font-hand text-3xl md:text-4xl text-ink font-bold leading-none select-none tracking-tight">
                       {project.title}
                     </h3>
                   </div>
                 </div>
               </div>
 
-              {/* Hand-drawn status line under header when not scrolled */}
-              {!isScrolled && (
-                <div className="absolute bottom-0 inset-x-0 px-4 md:px-12 opacity-30 select-none pointer-events-none">
-                  <svg className="w-full h-[8px] overflow-visible text-accent stroke-current" viewBox="0 0 500 8" fill="none">
-                    <path d="M2 4 Q125 -1, 250 4 T 498 4" strokeWidth="1.8" strokeLinecap="round"/>
-                  </svg>
-                </div>
-              )}
-
-              <div className="flex items-center gap-3.5 md:gap-5">
+              <div className="flex items-center gap-3">
                 {project.link && (
                   project.link.startsWith('/') ? (
                     <motion.div whileTap={{ scale: 0.95 }} className="inline-block">
                       <Link 
                         to={project.link}
-                        className="flex items-center gap-2 px-3 py-1.5 border-2 border-solid border-pencil-light bg-accent/5 hover:bg-accent/15 rounded-xl transition-all duration-300 cursor-pointer text-ink group relative select-none shadow-[4px_4px_0_0_var(--color-pencil-light)] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[6px_6px_0_0_var(--color-accent)] hover:border-accent"
+                        className="flex items-center gap-2 px-4 py-2 border border-pencil-light bg-paper rounded-full transition-all duration-300 cursor-pointer text-ink group relative select-none hover:bg-ink hover:text-paper hover:border-ink shadow-sm"
                       >
-                        <span className="font-sans text-[0.72rem] md:text-[0.78rem] font-bold tracking-wider uppercase">
+                        <span className="font-sans text-[0.75rem] font-medium tracking-wider uppercase">
                           {project.linkText || 'Live Project'}
                         </span>
-                        <ExternalLink size={11} className="text-accent group-hover:rotate-45 transition-transform duration-300 shrink-0" />
+                        <ExternalLink size={14} className="group-hover:rotate-45 transition-transform duration-300 shrink-0" />
                       </Link>
                     </motion.div>
                   ) : (
@@ -224,12 +221,12 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                       href={project.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-3 py-1.5 border-2 border-solid border-pencil-light bg-accent/5 hover:bg-accent/15 rounded-xl transition-all duration-300 cursor-pointer text-ink group relative select-none shadow-[4px_4px_0_0_var(--color-pencil-light)] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[6px_6px_0_0_var(--color-accent)] hover:border-accent"
+                      className="flex items-center gap-2 px-4 py-2 border border-pencil-light bg-paper rounded-full transition-all duration-300 cursor-pointer text-ink group relative select-none hover:bg-ink hover:text-paper hover:border-ink shadow-sm"
                     >
-                      <span className="font-sans text-[0.72rem] md:text-[0.78rem] font-bold tracking-wider uppercase">
+                      <span className="font-sans text-[0.75rem] font-medium tracking-wider uppercase">
                         {project.linkText || 'Live Project'}
                       </span>
-                      <ExternalLink size={11} className="text-accent group-hover:rotate-45 transition-transform duration-300 shrink-0" />
+                      <ExternalLink size={14} className="group-hover:rotate-45 transition-transform duration-300 shrink-0" />
                     </motion.a>
                   )
                 )}
@@ -237,10 +234,10 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                 <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={onClose}
-                  className="w-10 h-10 bg-paper/85 border-2 border-solid border-pencil-light rounded-xl flex items-center justify-center text-ink-dim transition-all duration-300 shadow-[4px_4px_0_0_var(--color-pencil-light)] cursor-pointer hover:shadow-[6px_6px_0_0_var(--color-accent)] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:border-accent hover:text-accent group"
+                  className="w-10 h-10 bg-paper border border-pencil-light rounded-full flex items-center justify-center text-ink-dim transition-all duration-300 cursor-pointer hover:bg-ink hover:text-paper hover:border-ink shadow-sm"
                   aria-label="Close modal"
                 >
-                  <X size={18} strokeWidth={2.5} />
+                  <X size={20} strokeWidth={2} />
                 </motion.button>
               </div>
             </header>
@@ -293,14 +290,11 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
 
                     <div className="relative">
                       <motion.div 
-                        initial={{ opacity: 0, rotate: -0.5 }}
-                        whileInView={{ opacity: 1, rotate: 0.3 }}
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4 }}
-                        className="relative font-hand text-[1.10rem] md:text-[1.20rem] text-ink-dim leading-relaxed bg-paper-light/40 p-6 md:p-8 rounded-[1.5rem] border border-dashed border-pencil-light font-hand italic shadow-md overflow-hidden"
+                        className="relative font-sans text-[1rem] md:text-[1.05rem] text-ink-dim leading-relaxed bg-paper/50 p-6 md:p-8 rounded-[2rem] border border-pencil-light/30 shadow-sm"
                       >
-                        {/* Top Margin Sketched Line representing a notebook page */}
-                        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
-                        
                         <span className="relative z-10 block pr-6 text-ink/90">
                           {project.desc}
                         </span>
@@ -323,9 +317,9 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                       { label: 'STYLE', value: project.artMeta.style, icon: '✦' },
                       { label: 'TOOLS', value: project.artMeta.tools, icon: '⚙' }
                     ].map((m, i) => (
-                      <div key={i} className="bg-paper border border-pencil-light/60 border-dashed rounded-xl p-3.5 flex flex-col gap-1 hover:bg-accent/5 hover:border-accent/45 hover:scale-[1.02] transition-all duration-300 group/meta relative overflow-hidden shadow-sm">
-                        <span className="font-mono text-[0.52rem] text-accent font-bold tracking-[0.22em] uppercase mb-0.5">{m.label}</span>
-                        <span className="font-hand text-[0.88rem] leading-none text-ink-dim group-hover/meta:text-accent font-semibold truncate transition-colors">{m.value}</span>
+                      <div key={i} className="bg-paper/50 border border-pencil-light/30 rounded-2xl p-4 flex flex-col gap-1.5 hover:bg-white hover:border-pencil-light/50 hover:-translate-y-1 transition-all duration-300 group/meta relative overflow-hidden shadow-sm">
+                        <span className="font-mono text-[0.6rem] text-ink-dim/60 font-semibold tracking-widest uppercase">{m.label}</span>
+                        <span className="font-sans text-[0.95rem] leading-none text-ink group-hover/meta:text-accent font-medium truncate transition-colors">{m.value}</span>
                       </div>
                     ))}
                   </motion.section>
@@ -338,19 +332,13 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                    viewport={{ once: true }}
                    className="relative group"
                 >
-                   <div className={cn("relative group/media", images.length > 0 && "cursor-zoom-in")} onClick={() => images.length > 0 && setIsLightboxOpen(true)}>
-                      <div className="absolute -inset-10 bg-accent/5 blur-xl md:blur-3xl opacity-0 group-hover/media:opacity-100 transition-opacity duration-1000 animate-pulse" />
+                   <div className={cn("relative group/media lg:px-4", images.length > 0 && "cursor-zoom-in")} onClick={() => images.length > 0 && setIsLightboxOpen(true)}>
                       
-                      {/* Hand-sketched paste-tape graphic */}
-                      {!liteMode && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-5 bg-accent/25 border border-accent/35 opacity-80 select-none rotate-[-1.5deg] z-20 pointer-events-none shadow-[2px_2px_5px_rgba(0,0,0,0.05)]" style={{ clipPath: 'polygon(0% 12%, 3% 0%, 97% 4%, 100% 15%, 98% 88%, 91% 100%, 8% 97%, 2% 84%)' }} />
-                      )}
-
-                      <div className="relative aspect-[16/10] bg-charcoal-warm shadow-2xl rounded-2xl overflow-hidden border-2 border-pencil-light/60 group-hover:border-accent/40 group-hover:scale-[1.01] transition-transform duration-700 ease-[0.16,1,0.3,1] shadow-[5px_5px_0_var(--color-pencil-light)]">
+                      <div className="relative aspect-[16/10] bg-paper shadow-sm rounded-2xl overflow-hidden border border-pencil-light/30 group-hover:border-accent/40 group-hover:scale-[1.01] transition-transform duration-700 ease-[0.16,1,0.3,1]">
                         {project.youtube ? (
                           <div className="w-full h-full relative bg-black">
                             {!isPlayingVideo ? (
-                              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#130d0a] cursor-pointer group/vid" onClick={(e) => { e.stopPropagation(); setIsPlayingVideo(true); }}>
+                              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-charcoal cursor-pointer group/vid" onClick={(e) => { e.stopPropagation(); setIsPlayingVideo(true); }}>
                                 <img
                                   src={`https://img.youtube.com/vi/${project.youtube}/maxresdefault.jpg`}
                                   alt={project.title}
@@ -358,12 +346,9 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                                   onError={(e) => { e.currentTarget.src = `https://img.youtube.com/vi/${project.youtube}/0.jpg`; }}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/40 group-hover/vid:from-black/70 group-hover/vid:via-black/20 transition-all" />
-                                <div className="relative z-20 w-16 h-16 rounded-full bg-accent text-white flex items-center justify-center shadow-2xl group-hover/vid:scale-110 active:scale-95 transition-transform duration-300">
-                                  <Play size={26} fill="currentColor" className="ml-1" />
+                                <div className="relative z-20 w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/10 backdrop-blur-md text-white flex items-center justify-center border border-white/20 shadow-lg group-hover/vid:scale-110 group-hover/vid:bg-accent group-hover/vid:border-accent active:scale-95 transition-all duration-300">
+                                  <Play size={28} fill="currentColor" className="ml-1" />
                                 </div>
-                                <span className="relative z-20 font-marker text-[0.9rem] text-white/95 mt-4 px-4 py-1 bg-black/55 border border-white/10 rounded-xl select-none group-hover/vid:bg-accent group-hover/vid:text-white transition-all shadow-sm">
-                                  Click to Play Video
-                                </span>
                               </div>
                             ) : (
                               <iframe
@@ -453,11 +438,11 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                                  </div>
                              </div>
                              <div className="space-y-1.5 md:space-y-2 flex-grow">
-                                <h5 className="font-sans text-[0.9rem] font-bold tracking-wider uppercase text-ink group-hover/item:text-accent transition-colors duration-300">
+                                <h5 className="font-sans text-[1rem] font-bold tracking-tight text-ink group-hover/item:text-accent transition-colors duration-300">
                                   {item.title}
                                 </h5>
-                                <div className="relative p-4 md:p-5 bg-paper border border-pencil-light/60 rounded-xl group-hover/item:bg-accent/[0.02] group-hover/item:border-accent/40 group-hover/item:shadow-[4px_4px_0_0_var(--color-accent)] transition-all duration-300 overflow-hidden">
-                                   <p className="font-hand text-[0.95rem] md:text-[1.05rem] text-ink-dim/90 leading-relaxed italic relative z-10">{item.body}</p>
+                                <div className="relative p-5 md:p-6 bg-paper/50 border border-pencil-light/30 rounded-2xl group-hover/item:bg-accent/[0.02] group-hover/item:border-accent/30 shadow-sm transition-all duration-300 overflow-hidden">
+                                   <p className="font-sans text-[0.95rem] md:text-[1.05rem] text-ink/80 leading-relaxed relative z-10">{item.body}</p>
                                 </div>
                              </div>
                           </motion.div>
@@ -479,33 +464,25 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                         <h4 className="font-mono text-[0.62rem] font-bold text-accent tracking-[0.3em] uppercase whitespace-nowrap font-sans">Development Milestones</h4>
                      </div>
 
-                     <div className="relative p-1 bg-pencil-light/45 border border-pencil-light/60 rounded-2xl shadow-xl overflow-hidden group/process select-none">
-                        <div 
-                          className="absolute inset-0 opacity-[0.035] pointer-events-none" 
-                          style={{ 
-                            backgroundImage: 'linear-gradient(to right, var(--color-accent) 1px, transparent 1px), linear-gradient(to bottom, var(--color-accent) 1px, transparent 1px)', 
-                            backgroundSize: '20px 20px',
-                          }} 
-                        />
+                     <div className="relative p-6 md:p-8 bg-paper/50 border border-pencil-light/30 rounded-[2rem] shadow-sm select-none">
+                        <div className="absolute left-10 md:left-[3.25rem] top-8 bottom-8 w-[2px] bg-pencil-light/30 hidden md:block" />
                         
-                        <div className="relative bg-[#130d0a]/95 p-5 md:p-6 space-y-6 md:space-y-8 rounded-2xl">
-                           <div className="absolute left-9 md:left-12 top-0 bottom-0 w-[2px] bg-pencil-light/40 hidden md:block" />
-                           
+                        <div className="relative space-y-8 md:space-y-10">
                            {project.process.map((step, i) => (
                              <motion.div 
                                initial={{ opacity: 0 }}
                                whileInView={{ opacity: 1 }}
                                transition={{ delay: i * 0.05 }}
                                key={i} 
-                               className="relative flex gap-5 md:gap-8 items-start group/step"
+                               className="relative flex gap-6 md:gap-10 items-start group/step"
                              >
-                                 <div className="z-10 bg-[#130d0a] p-0.5">
-                                   <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-md bg-paper/5 border border-pencil-light text-accent font-mono text-[0.7rem] md:text-[0.8rem] font-black group-hover/step:bg-accent group-hover/step:text-charcoal transition-all duration-300">
-                                      0{i+1}
+                                 <div className="z-10 bg-paper p-1 -ml-1">
+                                   <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-accent/5 border border-pencil-light/40 text-accent font-sans text-[0.8rem] md:text-[0.9rem] font-bold group-hover/step:bg-accent group-hover/step:text-white transition-all duration-300">
+                                      {String(i+1).padStart(2, '0')}
                                    </div>
                                 </div>
-                                <div className="flex-1 pt-1 md:pt-2">
-                                   <p className="font-hand text-[0.95rem] md:text-[1.05rem] text-ink-dim opacity-75 group-hover/step:opacity-100 transition-opacity duration-300 leading-tight italic">
+                                <div className="flex-1 pt-1.5 md:pt-2.5">
+                                   <p className="font-sans text-[0.95rem] md:text-[1.05rem] text-ink/80 group-hover/step:text-ink transition-colors duration-300 leading-relaxed">
                                       {step}
                                    </p>
                                 </div>
@@ -524,20 +501,20 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                     whileInView={{ opacity: 1 }}
                     className="pt-8 md:pt-12 text-center select-none flex flex-col items-center"
                   >
-                    <div className="h-[2px] w-full max-w-[124px] mx-auto bg-dashed border-t border-dashed border-pencil-light/60 mb-6" />
+                    <div className="h-px w-full max-w-[80px] mx-auto bg-pencil-light/40 mb-8" />
                     
-                    <p className="font-hand text-[1.10rem] md:text-[1.30rem] text-ink-dim italic max-w-lg mx-auto leading-relaxed">
+                    <p className="font-sans text-[1.10rem] md:text-[1.2rem] text-ink/70 max-w-lg mx-auto leading-relaxed font-light">
                       "{project.footerNote}"
                     </p>
 
                     {project.footerLink && (
                       project.footerLink.startsWith('/') ? (
-                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="inline-block mt-4">
+                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="inline-block mt-8">
                           <Link
                             to={project.footerLink}
-                            className="inline-flex items-center gap-2 font-mono text-[0.62rem] font-black tracking-wider uppercase text-accent bg-accent/5 border border-accent/25 px-4 py-2 rounded-xl hover:bg-accent hover:text-white hover:border-accent transition-all duration-300 shadow-xs cursor-pointer"
+                            className="inline-flex items-center gap-2 font-sans text-[0.75rem] font-medium tracking-widest uppercase text-ink/80 border border-pencil-light/60 bg-paper/50 px-6 py-2.5 rounded-full hover:bg-ink hover:text-white hover:border-ink transition-all duration-300 shadow-sm cursor-pointer"
                           >
-                            {project.footerLinkText || 'View Project ↗'}
+                            {project.footerLinkText || 'View Project'} →
                           </Link>
                         </motion.div>
                       ) : (
@@ -547,9 +524,9 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
                           href={project.footerLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex mt-4 items-center gap-2 font-mono text-[0.62rem] font-black tracking-wider uppercase text-accent bg-accent/5 border border-accent/25 px-4 py-2 rounded-xl hover:bg-accent hover:text-white hover:border-accent transition-all duration-300 shadow-xs cursor-pointer"
+                          className="inline-flex mt-8 items-center gap-2 font-sans text-[0.75rem] font-medium tracking-widest uppercase text-ink/80 border border-pencil-light/60 bg-paper/50 px-6 py-2.5 rounded-full hover:bg-ink hover:text-white hover:border-ink transition-all duration-300 shadow-sm cursor-pointer"
                         >
-                          {project.footerLinkText || 'View Project ↗'}
+                          {project.footerLinkText || 'View Project'} →
                         </motion.a>
                       )
                     )}
@@ -559,40 +536,44 @@ export default function ProjectModal({ project, onClose, onNavigate, projectInde
               </div>
             </div>
 
-            {/* Tactical Navigation Footer */}
-            <footer className="h-16 md:h-20 flex items-center justify-between px-4 md:px-10 bg-paper-light border-t-2 border-dashed border-pencil-light/30 shrink-0 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+            {/* Smooth Navigation Footer */}
+            <footer className="h-20 md:h-24 flex items-center justify-between px-6 md:px-12 bg-paper/50 backdrop-blur-sm border-t border-pencil-light/20 shrink-0 z-50">
                <button 
                   disabled={projectIndex === 0}
                   onClick={() => onNavigate(-1)}
-                  className="group flex items-center gap-2 disabled:opacity-10 transition-all text-left cursor-pointer text-ink-dim hover:text-accent"
+                  className="group flex items-center gap-3 disabled:opacity-20 transition-all text-left cursor-pointer text-ink/70 hover:text-ink"
                >
-                  <ChevronLeft size={18} className="text-accent/60 group-hover:text-accent group-hover:-translate-x-1.5 transition-all duration-300" />
-                  <span className="font-mono text-[0.68rem] font-bold tracking-wider uppercase">Prev</span>
+                  <div className="w-8 h-8 rounded-full border border-pencil-light/40 flex items-center justify-center group-hover:bg-ink group-hover:text-paper group-hover:border-ink transition-colors">
+                     <ChevronLeft size={16} />
+                  </div>
+                  <span className="font-sans text-[0.8rem] font-medium tracking-wide uppercase hidden sm:block">Prev</span>
                </button>
                
                 <div className="flex flex-col items-center">
-                   <div className="flex gap-1 mb-1.5 md:gap-1.5 md:mb-2">
+                   <div className="flex gap-1.5 md:gap-2 mb-1">
                      {Array.from({ length: totalProjects }).map((_, i) => (
                        <button
                          key={i} 
                          onClick={() => onNavigate(i - projectIndex)}
                          className={cn(
-                           "h-1 rounded-full transition-all duration-700 ease-[0.16,1,0.3,1] cursor-pointer", 
-                           i === projectIndex ? "bg-accent w-4 md:w-6" : "bg-ink/10 w-1 md:w-1.5 hover:bg-ink/20"
+                           "h-1.5 rounded-full transition-all duration-700 ease-[0.16,1,0.3,1] cursor-pointer", 
+                           i === projectIndex ? "bg-ink w-6 md:w-8" : "bg-pencil-light/40 w-1.5 md:w-2 hover:bg-pencil-light"
                          )} 
                        />
                      ))}
                    </div>
-                   <span className="font-mono text-[0.6rem] text-ink/40 font-bold tracking-widest uppercase">{projectIndex + 1} / {totalProjects}</span>
+                   <span className="font-sans text-[0.65rem] text-ink/50 font-bold uppercase tracking-wider">{projectIndex + 1} / {totalProjects}</span>
                 </div>
  
                <button 
                   disabled={projectIndex === totalProjects - 1}
                   onClick={() => onNavigate(1)}
-                  className="group flex items-center gap-2 disabled:opacity-10 transition-all text-right cursor-pointer text-ink-dim hover:text-accent"
+                  className="group flex items-center gap-3 disabled:opacity-20 transition-all text-right cursor-pointer text-ink/70 hover:text-ink"
                >
-                  <span className="font-mono text-[0.68rem] font-bold tracking-wider uppercase">Next</span>
-                  <ChevronRight size={18} className="text-accent/60 group-hover:text-accent group-hover:translate-x-1.5 transition-all duration-300" />
+                  <span className="font-sans text-[0.8rem] font-medium tracking-wide uppercase hidden sm:block">Next</span>
+                  <div className="w-8 h-8 rounded-full border border-pencil-light/40 flex items-center justify-center group-hover:bg-ink group-hover:text-paper group-hover:border-ink transition-colors">
+                     <ChevronRight size={16} />
+                  </div>
                </button>
             </footer>
 

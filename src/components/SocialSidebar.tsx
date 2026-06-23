@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Github, Instagram, Mail, User } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -12,14 +12,52 @@ const SOCIALS = [
 export default function SocialSidebar() {
   const [showSoon, setShowSoon] = useState(false);
 
+  // Generate a sketchy hand-drawn single path
+  const sketchPath = useMemo(() => {
+    let path = "M 10,0";
+    const seed = 0;
+    const amp = 0.7;
+    for (let i = 1; i <= 60; i++) {
+      const y = i * (100 / 60);
+      // Combine sine waves for macro curves and micro jitter
+      const macroCurve = Math.sin(y * 0.08 + seed) * 3.5;
+      const microJitter = Math.cos(y * 0.6 + seed * 2.5) * amp;
+      const x = 10 + macroCurve + microJitter;
+      path += ` L ${x},${y}`;
+    }
+    return path;
+  }, []);
+
   const handleResumeClick = () => {
     setShowSoon(true);
     setTimeout(() => setShowSoon(false), 2000);
   };
 
   return (
-    <div className="fixed left-4 md:left-6 xl:left-8 bottom-0 z-[200] hidden lg:flex flex-col items-center gap-6 md:gap-8 gpu">
-      <div className="flex flex-col items-center gap-6">
+    <div className="fixed left-4 md:left-6 xl:left-8 top-0 h-[100dvh] z-[200] hidden lg:flex flex-col items-center justify-center gpu">
+      
+      {/* Top hand-drawn vertical line */}
+      <motion.div 
+        initial={{ scaleY: 0 }}
+        animate={{ scaleY: 1 }}
+        transition={{ delay: 0.8, duration: 1, ease: "easeOut" }}
+        style={{ transformOrigin: "top" }}
+        className="w-[24px] flex-1 mb-4 pointer-events-none"
+      >
+        <svg viewBox="0 0 20 100" preserveAspectRatio="none" className="w-full h-full text-ink stroke-current">
+          <path 
+            d={sketchPath} 
+            strokeWidth="1.2" 
+            fill="none" 
+            vectorEffect="non-scaling-stroke"
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            className="opacity-30"
+          />
+        </svg>
+      </motion.div>
+
+      <div className="flex flex-col items-center gap-6 z-10 py-2">
         {/* Resume Button */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -115,25 +153,24 @@ export default function SocialSidebar() {
           ))}
         </div>
       </div>
-      
-      {/* Hand-drawn Vertical Line (Hidden on mobile) */}
+
+      {/* Bottom hand-drawn vertical line */}
       <motion.div 
-        initial={{ height: 0, opacity: 0 }}
-        animate={{ height: '6rem', opacity: 1 }}
-        transition={{ delay: 1, duration: 1.2, ease: "easeOut" }}
-        className="hidden md:flex relative w-4 justify-center"
+        initial={{ scaleY: 0 }}
+        animate={{ scaleY: 1 }}
+        transition={{ delay: 0.8, duration: 1, ease: "easeOut" }}
+        style={{ transformOrigin: "bottom" }}
+        className="w-[24px] flex-1 mt-4 pointer-events-none"
       >
-        <svg className="w-full h-full overflow-visible" viewBox="0 0 20 100" preserveAspectRatio="none">
-          <motion.path 
-            d="M10,0 C12,20 8,40 10,60 C12,80 8,100 10,120" 
-            stroke="currentColor" 
-            strokeWidth="1.5" 
-            strokeLinecap="round"
+        <svg viewBox="0 0 20 100" preserveAspectRatio="none" className="w-full h-full text-ink stroke-current">
+          <path 
+            d={sketchPath} 
+            strokeWidth="1.2" 
             fill="none" 
-            className="text-accent/30"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ delay: 1.2, duration: 2 }}
+            vectorEffect="non-scaling-stroke"
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            className="opacity-30"
           />
         </svg>
       </motion.div>

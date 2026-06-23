@@ -1,9 +1,9 @@
 import React, { useEffect, useState, memo } from 'react';
-import { Github, Mail, Code, PenTool, Sparkles, Heart, Activity, Cpu, Zap, Sliders, Grid, Check, MapPin } from 'lucide-react';
+import { Code, PenTool, Sparkles, Heart, Activity, Cpu, Zap, Sliders, Grid, Check, MapPin } from 'lucide-react';
 import { smoothScrollTo } from '../lib/utils';
-import { motion, AnimatePresence } from 'motion/react';
-import AayuParticleText from './AayuParticleText';
-import avatarImg from '../assets/avatar.png';
+import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
+import HeroMotionGraphic from './HeroMotionGraphic';
+import avatarImg from '../wallpapers/assets/assets/avatar.png';
 import { usePerformanceMode } from '../hooks/usePerformanceMode';
 
 interface HeroProps {
@@ -13,6 +13,11 @@ interface HeroProps {
 }
 
 export default memo(function Hero({ isLoading = false, liveStatus, avatarUrl }: HeroProps) {
+  const { scrollY } = useScroll();
+  const opacity = useTransform(scrollY, [0, 450], [1, 0]);
+  const yTranslate = useTransform(scrollY, [0, 450], [0, 60]);
+  const blurValue = useTransform(scrollY, [0, 450], ["blur(0px)", "blur(14px)"]);
+
   const [kathmanduTime, setKathmanduTime] = useState<string>('');
   const [hoveredCard, setHoveredCard] = useState<'sketch' | 'code' | null>(null);
 
@@ -136,20 +141,20 @@ export function ActivePencil() {
         }
         
         if (matchText.startsWith('"') || matchText.startsWith("'")) {
-          // String literal - glowing soft purple lavender/rose tone
-          parts.push(<span key={matchIdx} className="text-[#F472B6]">{matchText}</span>);
+          // String literal - Monet Tertiary
+          parts.push(<span key={matchIdx} className="text-syntax-string">{matchText}</span>);
         } else if (/^(?:import|const|let|new|export|function|from|return|true|false)$/.test(matchText)) {
           // Keywords - bright signature accent
           parts.push(<span key={matchIdx} className="text-accent font-semibold">{matchText}</span>);
         } else if (/^(?:Soul|Art|CraftEngine|ActivePencil|motion)$/.test(matchText)) {
-          // Tech constructs - vibrant material cyan
-          parts.push(<span key={matchIdx} className="text-[#38BDF8] font-semibold">{matchText}</span>);
+          // Tech constructs - Monet Secondary
+          parts.push(<span key={matchIdx} className="text-syntax-entity font-semibold">{matchText}</span>);
         } else if (/^\d+$/.test(matchText)) {
-          // Numbers - golden yellow
-          parts.push(<span key={matchIdx} className="text-amber-300 font-medium">{matchText}</span>);
+          // Numbers - Monet Error/Warm
+          parts.push(<span key={matchIdx} className="text-syntax-number font-medium">{matchText}</span>);
         } else {
-          // Method triggers - deep royal/indigo glow tint
-          parts.push(<span key={matchIdx} className="text-[#A78BFA] font-medium">{matchText}</span>);
+          // Method triggers - Monet Primary
+          parts.push(<span key={matchIdx} className="text-syntax-method font-medium">{matchText}</span>);
         }
         
         currentIdx = regex.lastIndex;
@@ -171,60 +176,81 @@ export function ActivePencil() {
   };
 
   return (
-    <header 
+    <motion.header 
+      style={{ opacity, y: yTranslate, filter: blurValue }}
       className="min-h-[75vh] lg:min-h-[75vh] grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] gap-10 lg:gap-14 items-center max-w-[1200px] mx-auto px-6 md:px-12 pt-32 md:pt-40 pb-8 md:pb-12 relative isolate text-left gpu overflow-hidden" 
       id="hero"
     >
-      {/* Hand-drawn blueprint/draft guidelines background floating organically */}
-      <div className="absolute inset-0 pointer-events-none opacity-20 select-none z-0">
-        <svg viewBox="0 0 1000 500" className="w-full h-full text-accent/15 stroke-current" fill="none" strokeWidth="1" strokeLinecap="round">
-          {/* Main design line curves */}
-          <path d="M 50,150 Q 300,50 500,180 T 950,160" strokeDasharray="4,8" />
-          <path d="M 120,240 Q 350,120 520,250 T 880,210" strokeDasharray="1,6" className="opacity-60" />
-          {/* Geometric plotting markers */}
-          <circle cx="820" cy="180" r="80" strokeDasharray="3,10" />
-          <circle cx="150" cy="350" r="40" strokeDasharray="2,6" />
-          <line x1="720" y1="180" x2="920" y2="180" strokeDasharray="4 4" />
-          <line x1="820" y1="80" x2="820" y2="280" strokeDasharray="4 4" />
-        </svg>
+      {/* Dynamic interactive vector fields & blueprint motion graphics backdrop */}
+      <div className="absolute inset-0 pointer-events-none md:pointer-events-auto opacity-40 select-none z-0">
+        <HeroMotionGraphic />
       </div>
 
       {/* LEFT COLUMN: Narrative description & Interactive links */}
       <motion.div 
-        initial={{ opacity: 1 }}
-        animate={{ opacity: 1 }}
+        variants={{
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+              delayChildren: 0.1,
+            }
+          }
+        }}
+        initial="hidden"
+        animate="show"
         className="flex flex-col items-start gap-6 md:gap-7 relative z-10 w-full text-left"
       >
-        <div className="flex items-center gap-4">
-           {/* Beautiful rustic avatar block */}
-           <div className="w-[72px] h-[72px] md:w-[84px] md:h-[84px] rounded-[24%] overflow-hidden relative shrink-0 shadow-lg group transition-transform duration-300 hover:scale-104 gpu">
-              <img
-                src={avatarUrl && avatarUrl.trim() !== '' ? avatarUrl : avatarImg}
-                alt="Aayu"
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover block group-hover:scale-105 transition-transform duration-500 ease-out will-change-transform"
-              />
-              <div className="absolute inset-0 border border-accent/15 rounded-[24%] pointer-events-none group-hover:border-accent/40 transition-colors" />
-           </div>
+        <motion.div 
+          className="flex flex-wrap items-center gap-3"
+          variants={{
+            hidden: { opacity: 0, y: 15 },
+            show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 200, damping: 20 } }
+          }}
+        >
+          <span className="font-mono text-[0.68rem] text-accent bg-accent/8 border border-accent/25 rounded-md px-3.5 py-1.5 font-bold tracking-[0.2em] uppercase shadow-2xs">
+            Developer
+          </span>
+          <span className="font-mono text-[0.65rem] text-ink-faint font-bold select-none opacity-50 px-1">
+            ×
+          </span>
+          <span className="font-mono text-[0.68rem] text-accent bg-accent/8 border border-accent/25 rounded-md px-3.5 py-1.5 font-bold tracking-[0.2em] uppercase shadow-2xs">
+            Artist
+          </span>
+        </motion.div>
 
-           <div className="flex flex-col ml-2 border-l-2 border-pencil-light/40 pl-4 py-1 justify-center gap-[2px] italic">
-             <span className="font-mono text-[0.68rem] text-ink tracking-[0.25em] uppercase font-bold opacity-90">Developer</span>
-             <div className="flex items-center relative -ml-[17px]">
-               <div className="w-3 h-[2px] bg-accent/60 mr-2" />
-               <span className="font-mono text-accent text-[0.9rem] font-bold leading-none">×</span>
-             </div>
-             <span className="font-mono text-[0.68rem] text-ink tracking-[0.25em] uppercase font-bold opacity-90">Artist</span>
-           </div>
-        </div>
-
-        {/* Brand Display Name with Interactive Typography Particles */}
-        <div className="w-full max-w-[340px] sm:max-w-[450px] md:max-w-xl select-none mt-1">
-          <AayuParticleText isLoading={isLoading} />
-        </div>
+        {/* Brand Display Name with Elegant Marker Typography */}
+        <motion.div 
+          className="w-full max-w-[340px] sm:max-w-[450px] md:max-w-xl select-none mt-1"
+          variants={{
+            hidden: { opacity: 0, y: 15 },
+            show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 200, damping: 20 } }
+          }}
+        >
+          <h1 
+            className="font-marker text-[clamp(4.2rem,11.5vw,7.8rem)] leading-[0.85] text-ink -tracking-wider relative inline-block cursor-default select-none"
+          >
+            AAYU
+            <motion.span 
+              initial={{ scale: 0, rotate: -20 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 0.6, type: "spring", stiffness: 200, damping: 10 }}
+              className="text-accent inline-block font-sans origin-bottom"
+            >
+              .
+            </motion.span>
+          </h1>
+        </motion.div>
 
         {/* Kathmandu Live Clock */}
-        <div className="flex flex-col gap-4 max-w-[500px] w-full mt-1">
+        <motion.div 
+          className="flex flex-col gap-4 max-w-[500px] w-full mt-1"
+          variants={{
+            hidden: { opacity: 0, y: 15 },
+            show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 200, damping: 20 } }
+          }}
+        >
           {kathmanduTime && (
             <div className="flex flex-wrap items-center gap-2 select-none cursor-default">
               <span className="flex items-center gap-1.5 font-mono text-[0.68rem] font-bold text-accent px-3 py-1 bg-accent/8 border-l-2 border-accent rounded-r-md uppercase tracking-wider shadow-2xs">
@@ -247,10 +273,16 @@ export function ActivePencil() {
           <p className="font-kalam text-[15.52px] leading-[1.62] text-ink-dim/95 tracking-wider font-light">
             I weave <span className="text-ink font-bold hover:text-accent duration-200 transition-colors select-none">logic into motion</span> and <span className="text-ink font-bold hover:text-accent duration-200 transition-colors select-none">code into art</span>, designing responsive digital spaces with a <span className="font-marker text-accent text-[1.08em] whitespace-nowrap inline-block -rotate-2 hover:rotate-0 transition-all duration-300 cursor-default select-none">handmade soul</span>.
           </p>
-        </div>
+        </motion.div>
 
         {/* Call to Actions & Interactions */}
-        <div className="flex flex-wrap items-center gap-4 mt-3">
+        <motion.div 
+          className="flex flex-wrap items-center gap-4 mt-3"
+          variants={{
+            hidden: { opacity: 0, y: 15 },
+            show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 200, damping: 20 } }
+          }}
+        >
           <a
              href="#work"
              onClick={(e) => { e.preventDefault(); smoothScrollTo('work'); }}
@@ -271,34 +303,16 @@ export function ActivePencil() {
             >
                Say Hello
             </a>
-
-            <div className="flex gap-[0.4rem]">
-              {[
-                { icon: <Github size={14} />, url: 'https://github.com/meaayu', label: 'GitHub' },
-                { icon: <Mail size={14} />, url: 'mailto:itsaayush.m@gmail.com', label: 'Email' }
-              ].map((social, i) => (
-                <a
-                  key={i}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener"
-                  aria-label={social.label}
-                  className="w-[34px] h-[34px] flex items-center justify-center border border-dashed border-ink/25 text-ink-dim rounded-sm transition-all duration-150 hover:text-accent hover:border-accent hover:bg-accent/5 hover:-translate-y-0.5 btn-sketch-hover"
-                  style={{ clipPath: 'polygon(0% 6%, 2% 0%, 98% 1%, 100% 6%, 99% 94%, 97% 100%, 3% 99%, 0% 94%)' }}
-                >
-                  {social.icon}
-                </a>
-              ))}
-            </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Scroll Indicator */}
         <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
           className="mt-14 sm:mt-16 flex items-start auto-cols-auto gap-3 relative pointer-events-none"
+          variants={{
+            hidden: { opacity: 0, y: 15 },
+            show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 150, damping: 20 } }
+          }}
         >
           <div className="flex flex-col items-center gap-1.5 opacity-60">
             <span className="font-hand text-[0.85rem] text-ink-dim uppercase tracking-[0.2em] -ml-2">Scroll To Explore</span>
@@ -325,7 +339,7 @@ export function ActivePencil() {
           
           {/* --- LAYER 1: THE INSPIRATIONAL QUOTES CARD --- */}
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 0, scale: 0.95, y: 30, rotate: -15 }}
             animate={{ 
               opacity: 1,
               rotate: hoveredCard === 'sketch' ? -1 : (hoveredCard === 'code' ? -9 : -5),
@@ -334,7 +348,13 @@ export function ActivePencil() {
               y: hoveredCard === 'sketch' ? -3 : (hoveredCard === 'code' ? 10 : 0),
               zIndex: hoveredCard === 'sketch' ? 30 : 10
             }}
-            transition={{ type: "spring", stiffness: 280, damping: 22 }}
+            transition={{
+              opacity: { duration: 0.7, ease: "easeOut" },
+              scale: { type: "spring", stiffness: 280, damping: 22 },
+              rotate: { type: "spring", stiffness: 280, damping: 22 },
+              x: { type: "spring", stiffness: 280, damping: 22 },
+              y: { type: "spring", stiffness: 280, damping: 22 }
+            }}
             onMouseEnter={() => {
               setHoveredCard('sketch');
             }}
@@ -423,7 +443,7 @@ export function ActivePencil() {
 
           {/* --- LAYER 2: THE INTERACTIVE CODE EMBED CARD --- */}
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 0, scale: 0.95, y: 30, rotate: 15 }}
             animate={{ 
               opacity: 1,
               rotate: hoveredCard === 'code' ? 1 : (hoveredCard === 'sketch' ? 8 : 4),
@@ -432,7 +452,13 @@ export function ActivePencil() {
               y: hoveredCard === 'code' ? -3 : (hoveredCard === 'sketch' ? 10 : 0),
               zIndex: hoveredCard === 'code' ? 30 : 20
             }}
-            transition={{ type: "spring", stiffness: 280, damping: 22 }}
+            transition={{
+              opacity: { duration: 0.7, delay: 0.15, ease: "easeOut" },
+              scale: { type: "spring", stiffness: 280, damping: 22 },
+              rotate: { type: "spring", stiffness: 280, damping: 22 },
+              x: { type: "spring", stiffness: 280, damping: 22 },
+              y: { type: "spring", stiffness: 280, damping: 22 }
+            }}
             onMouseEnter={() => {
               setHoveredCard('code');
             }}
@@ -440,7 +466,7 @@ export function ActivePencil() {
             style={{ backgroundColor: 'color-mix(in srgb, var(--color-pencil-dark) 45%, var(--color-paper))' }}
           >
             {/* Interactive File tab selections */}
-            <div className="flex items-center justify-between mb-3 border-b border-pencil-light/20 pb-2.5 select-none shrink-0">
+            <div className="flex items-center justify-between mb-3 border-b border-pencil-light/20 pb-2.5 select-none shrink-0 border-solid">
               <div className="flex gap-1">
                 {(['soul.ts', 'physics.css', 'canvas.tsx'] as const).map((tab) => {
                   const isActive = activeCodeTab === tab;
@@ -499,6 +525,6 @@ export function ActivePencil() {
 
 
 
-    </header>
+    </motion.header>
   );
 });

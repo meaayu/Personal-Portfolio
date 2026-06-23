@@ -11,22 +11,27 @@
   --font-kalam: "Kalam", cursive;
   --font-mono: "JetBrains Mono", monospace;
 
-  /* Google Material You (Sunset Orange) - Dark Mode Theme (M3 Dynamic Specs) */
-  --color-charcoal: #1A110F;          /* Dynamic Dark base background */
-  --color-charcoal-warm: #120907;     /* Deep warm dark gray-brown secondary container */
-  --color-paper: #221816;             /* Cozy charcoal-terracotta card surface */
-  --color-paper-rgb: 34, 24, 22;
-  --color-paper-light: #2E211E;       /* Elevated dark card surface */
-  --color-ink: #F0E0DC;               /* Soft warm white / light-beige */
-  --color-ink-dim: #D8C2BC;           /* Warm gray key info text */
-  --color-ink-faint: #9F8C87;         /* Cozy espresso-outline text/icons */
-  --color-accent: #FFB59D;            /* Radiant soft peach-orange accent */
-  --color-pencil-light: #3D2A24;       /* Slate-terracotta border outlines */
-  --color-pencil-light-rgb: 61, 42, 36;
-  --color-pencil-dark: #0E0705;       /* Pitch-black charcoal warm */
-  --color-pencil-dark-rgb: 14, 7, 5;
+  /* Material You Purple Theme (Monet Dark) */
+  --color-charcoal: #141218;          /* Background */
+  --color-charcoal-warm: #0F0D13;     /* Surface Container Lowest */
+  --color-paper: #211F26;             /* Surface Container Dark */
+  --color-paper-rgb: 33, 31, 38;
+  --color-paper-light: #36343B;       /* Surface Container High */
+  --color-ink: #E6E0E9;               /* On Surface */
+  --color-ink-dim: #CAC4D0;           /* On Surface Variant */
+  --color-ink-faint: #938F99;         /* Outline */
+  --color-accent: #D0BCFF;            /* Primary */
+  --color-pencil-light: #4A4458;      /* Surface Variant */
+  --color-pencil-light-rgb: 74, 68, 88;
+  --color-pencil-dark: #141218;       /* Background */
+  --color-pencil-dark-rgb: 20, 18, 24;
   --shadow-card: 0 10px 40px -10px rgba(0, 0, 0, 0.45);
   --shadow-hover: 0 25px 60px -15px rgba(0, 0, 0, 0.65);
+
+  --color-syntax-string: #EFB8C8;
+  --color-syntax-entity: #CCC2DC;
+  --color-syntax-number: #F2B8B5;
+  --color-syntax-method: #D0BCFF;
 }
 
 html {
@@ -63,8 +68,8 @@ html {
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-kalam;
-    --color-ink: color-mix(in srgb, var(--color-accent) 32%, #F0E0DC 68%);
   }
+
 
   .font-hand {
     font-family: var(--font-hand);

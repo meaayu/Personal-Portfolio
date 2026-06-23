@@ -1,5 +1,6 @@
 {
-  "name": "Aayu\u0027s Portfolio",
+  "name": "aayu\u0027s Portfolio",
   "description": "Developer \u0026 Artist Portfolio for Aayu, featuring code, art, and motion.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "majorCapabilities": []
 }

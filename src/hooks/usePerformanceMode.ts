@@ -2,27 +2,18 @@ import { useState, useEffect } from 'react';
 
 function getInitialPerfMode(): boolean {
   try {
-    const saved = localStorage.getItem('app-perf-lite');
+    const saved = localStorage.getItem('app-perf-lite-v2');
     if (saved !== null) {
       return saved === 'true';
     }
 
-    // Proactive hardware & mobile profiling for smooth 60fps UX
-    const isLowMemory = 'deviceMemory' in navigator && (navigator as any).deviceMemory < 4;
-    const isLowCpu = 'hardwareConcurrency' in navigator && (navigator as any).hardwareConcurrency <= 4;
-    
-    // Quick mobile user-agent inspection
-    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
-
-    // Check for prefers-reduced-motion
+    // Check for prefers-reduced-motion as a strict request to reduce motion
     const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Default to lite mode if device is resource-constrained or mobile to prevent laggy interactions
-    const defaultToLite = isLowMemory || isLowCpu || isMobileDevice || prefersReducedMotion;
+    // Default to full, elegant animation by default so mobile users get the complete experience
+    const defaultToLite = prefersReducedMotion;
     
-    localStorage.setItem('app-perf-lite', String(defaultToLite));
+    localStorage.setItem('app-perf-lite-v2', String(defaultToLite));
     return defaultToLite;
   } catch (e) {
     return false;
@@ -40,7 +31,7 @@ export function usePerformanceMode() {
     }
     
     try {
-      localStorage.setItem('app-perf-lite', String(liteMode));
+      localStorage.setItem('app-perf-lite-v2', String(liteMode));
     } catch (e) {
       // Ignore storage errors silently
     }

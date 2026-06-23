@@ -11,11 +11,10 @@ const densityStrings = {
 };
 
 const THEMES = [
-  { id: 'matrix', name: 'Terminal Green', bg: 'bg-[#050A05]', text: 'text-[#39FF14]', border: 'border-[#39FF14]/40', accent: 'bg-[#39FF14]/20', glow: 'drop-shadow-[0_0_12px_rgba(57,255,20,0.6)]' },
-  { id: 'amber', name: 'Legacy Amber', bg: 'bg-[#1A0F00]', text: 'text-[#FFB000]', border: 'border-[#FFB000]/40', accent: 'bg-[#FFB000]/20', glow: 'drop-shadow-[0_0_12px_rgba(255,176,0,0.6)]' },
-  { id: 'neon', name: 'Neon Pink', bg: 'bg-[#0D0014]', text: 'text-[#FF00FF]', border: 'border-[#FF00FF]/40', accent: 'bg-[#FF00FF]/20', glow: 'drop-shadow-[0_0_12px_rgba(255,0,255,0.6)]' },
-  { id: 'ice', name: 'Cobalt Ice', bg: 'bg-[#000814]', text: 'text-[#00FFFF]', border: 'border-[#00FFFF]/40', accent: 'bg-[#00FFFF]/20', glow: 'drop-shadow-[0_0_12px_rgba(0,255,255,0.6)]' },
-  { id: 'monochrome', name: 'Monochrome', bg: 'bg-[#0A0A0A]', text: 'text-gray-200', border: 'border-gray-500/40', accent: 'bg-gray-200/20', glow: 'drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]' },
+  { id: 'sketch', name: 'Charcoal Sketch', bg: 'bg-[#F4E8E1]', text: 'text-[#1A110F]', border: 'border-[#1A110F]/20', accent: 'bg-[#1A110F]/10', glow: 'drop-shadow-sm' },
+  { id: 'blueprint', name: 'Cyan Blueprint', bg: 'bg-[#E3F2FD]', text: 'text-[#0D47A1]', border: 'border-[#0D47A1]/20', accent: 'bg-[#0D47A1]/10', glow: 'drop-shadow-sm' },
+  { id: 'sepia', name: 'Vintage Sepia', bg: 'bg-[#F5EFDF]', text: 'text-[#4E342E]', border: 'border-[#4E342E]/20', accent: 'bg-[#4E342E]/10', glow: 'drop-shadow-sm' },
+  { id: 'typewriter', name: 'Classic Ink', bg: 'bg-[#F9F9F9]', text: 'text-[#111111]', border: 'border-[#111111]/20', accent: 'bg-[#111111]/10', glow: 'drop-shadow-sm' },
 ];
 
 export default function AsciiGen() {
@@ -26,7 +25,7 @@ export default function AsciiGen() {
   const [asciiArt, setAsciiArt] = useState<string>('');
   const [resolution, setResolution] = useState(80); // chars per row
   const [density, setDensity] = useState<'high' | 'medium' | 'low'>('high');
-  const [theme, setTheme] = useState(THEMES[4]); // Default to Monochrome
+  const [theme, setTheme] = useState(THEMES[0]); // Default to Charcoal Sketch
   const [invert, setInvert] = useState(false);
   const [showOriginal, setShowOriginal] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -122,15 +121,13 @@ export default function AsciiGen() {
   }, [processImage]);
 
   return (
-    <div className={cn("w-full min-h-[100dvh] flex flex-col font-mono selection:bg-white/30 transition-colors duration-500 relative", theme.bg, theme.text)}>
-      {/* Scanline overlay */}
-      <div className="absolute inset-0 pointer-events-none opacity-10 z-50 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]"></div>
+    <div className={cn("w-full min-h-[100dvh] flex flex-col font-mono selection:bg-black/10 transition-colors duration-500 relative", theme.bg, theme.text)}>
 
       <header className={cn("h-16 flex-shrink-0 flex items-center justify-between px-4 sm:px-6 z-20 border-b relative backdrop-blur-sm", theme.border)}>
         <div className="flex items-center gap-4">
           <Link 
             to="/" 
-            className={cn("w-10 h-10 flex items-center justify-center border transition-all hover:bg-white/10 rounded-md backdrop-blur-md", theme.border, theme.text, theme.glow)}
+            className={cn("w-10 h-10 flex items-center justify-center border transition-all hover:bg-black/5 rounded-md backdrop-blur-md", theme.border, theme.text, theme.glow)}
           >
             <ArrowLeft size={18} />
           </Link>
@@ -144,7 +141,7 @@ export default function AsciiGen() {
       <div className="flex flex-col md:flex-row flex-1 p-4 gap-4 overflow-hidden relative z-10 max-w-7xl mx-auto w-full">
         
         {/* Controls */}
-        <aside className={cn("w-full md:w-[22rem] flex-shrink-0 border p-5 flex flex-col gap-6 overflow-y-auto rounded-lg backdrop-blur-md bg-black/20", theme.border, theme.glow)}>
+        <aside className={cn("w-full md:w-[22rem] flex-shrink-0 border p-5 flex flex-col gap-6 overflow-y-auto rounded-lg backdrop-blur-md bg-white/40", theme.border, theme.glow)}>
           <div className="flex items-center gap-2 border-b pb-4 border-inherit opacity-90">
              <SlidersHorizontal size={18} />
              <h2 className="text-sm font-bold uppercase tracking-widest">Parameters</h2>
@@ -160,7 +157,7 @@ export default function AsciiGen() {
                 className={cn(
                     "w-full py-4 border font-bold uppercase tracking-widest transition-all text-xs flex items-center justify-center gap-2 rounded-md",
                     theme.border,
-                    "hover:bg-white/10 active:scale-[0.98]"
+                    "hover:bg-black/5 active:scale-[0.98]"
                 )}
              >
                 <Upload size={14} /> Upload Image
@@ -187,7 +184,7 @@ export default function AsciiGen() {
              <input 
                type="range" min="40" max="150" value={resolution} 
                onChange={e => setResolution(parseInt(e.target.value))}
-               className={cn("w-full appearance-none h-1 bg-white/20 outline-none", "accent-current")}
+               className={cn("w-full appearance-none h-1 bg-black/10 outline-none", "accent-current")}
              />
           </div>
 
@@ -203,7 +200,7 @@ export default function AsciiGen() {
                      className={cn(
                         "py-3 border text-[10px] uppercase font-bold rounded-md transition-all active:scale-[0.98]", 
                         theme.border,
-                        density === d ? cn(theme.accent, "text-black drop-shadow-none") : "hover:bg-white/10"
+                        density === d ? cn(theme.accent, "text-black drop-shadow-none") : "hover:bg-black/5"
                      )}
                    >
                      {d}
@@ -221,7 +218,7 @@ export default function AsciiGen() {
                 className={cn(
                     "w-full py-3 border font-bold uppercase tracking-widest text-[10px] transition-all rounded-md active:scale-[0.98]",
                     theme.border,
-                    invert ? cn(theme.accent, "text-black drop-shadow-none") : "hover:bg-white/10"
+                    invert ? cn(theme.accent, "text-black drop-shadow-none") : "hover:bg-black/5"
                 )}
              >
                 {invert ? 'Inverted' : 'Standard'}
@@ -240,7 +237,7 @@ export default function AsciiGen() {
                      className={cn(
                         "py-3 border text-[10px] uppercase font-bold text-left px-4 transition-all rounded-md flex items-center gap-3 active:scale-[0.98]", 
                         theme.border,
-                        theme.id === t.id ? cn(theme.accent, "text-black drop-shadow-none") : "hover:bg-white/10"
+                        theme.id === t.id ? cn(theme.accent, "text-black drop-shadow-none") : "hover:bg-black/5"
                      )}
                    >
                      <span className={cn("w-2 h-2 rounded-full", t.id === t.id ? "bg-current" : t.text.replace('text-', 'bg-'))} />
@@ -252,8 +249,8 @@ export default function AsciiGen() {
         </aside>
 
         {/* Display */}
-        <main className={cn("flex-1 border relative overflow-hidden flex flex-col rounded-lg bg-black/40 backdrop-blur-sm", theme.border, theme.glow)}>
-           <div className={cn("h-12 border-b flex items-center justify-between px-5 bg-white/5", theme.border)}>
+        <main className={cn("flex-1 border relative overflow-hidden flex flex-col rounded-lg bg-white/60 backdrop-blur-sm", theme.border, theme.glow)}>
+           <div className={cn("h-12 border-b flex items-center justify-between px-5 bg-black/5", theme.border)}>
               <span className="text-[10px] uppercase tracking-widest opacity-80 flex items-center gap-2">
                   <Monitor size={14} /> Output Viewer
               </span>
@@ -268,7 +265,7 @@ export default function AsciiGen() {
            
            <div 
                className={cn(
-                   "flex-1 relative flex items-center justify-center overflow-hidden bg-black p-4 transition-all duration-300",
+                   "flex-1 relative flex items-center justify-center overflow-hidden bg-transparent p-4 transition-all duration-300",
                    isDragging ? "ring-2 ring-inset ring-opacity-50 " + theme.border.replace('border-', 'ring-') : ""
                )}
                onDragOver={handleDragOver}
@@ -289,8 +286,8 @@ export default function AsciiGen() {
                )}
 
                {image && asciiArt && showOriginal && (
-                   <div className={cn("absolute bottom-6 right-6 w-56 border z-20 bg-black rounded-md overflow-hidden shadow-2xl", theme.border)}>
-                      <div className={cn("h-6 border-b flex items-center px-2 bg-white/10", theme.border)}>
+                   <div className={cn("absolute bottom-6 right-6 w-56 border z-20 bg-white shadow-card rounded-md overflow-hidden", theme.border)}>
+                      <div className={cn("h-6 border-b flex items-center px-2 bg-black/5", theme.border)}>
                          <span className="text-[8px] uppercase tracking-widest opacity-70">Source Image</span>
                       </div>
                       <img src={image.src} alt="Original" className="w-full h-auto block opacity-80" />
